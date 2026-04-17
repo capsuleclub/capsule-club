@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capsule Club — Capsule PDF Template</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F5F1E9;--cream-dark:#EDE8DC;--ink:#1A1A16;
+  --cognac:#8B6B42;--linen:#C9BFA9;--muted:#7A7468;--soft:#E6DFD1;
+  --success:#4A7C59;--warning:#C4683A;
+}
+body{background:var(--cream-dark);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300}
+
+/* PAGE HEADER */
+.page-header{background:var(--ink);padding:52px 56px 44px}
+.ph-eyebrow{font-size:9px;letter-spacing:.4em;color:var(--cognac);text-transform:uppercase;margin-bottom:16px}
+.ph-title{font-family:'Playfair Display',serif;font-size:42px;font-weight:400;color:var(--cream);line-height:1.05;margin-bottom:8px}
+.ph-title em{font-style:italic;color:var(--cognac)}
+.ph-member{font-size:13px;color:rgba(245,241,233,.45);margin-bottom:32px}
+.ph-meta{display:flex;gap:40px;flex-wrap:wrap;padding-top:24px;border-top:1px solid rgba(255,255,255,.08)}
+.ph-meta-item{font-size:11px;color:var(--linen);opacity:.5;letter-spacing:.08em}
+.ph-meta-item strong{color:var(--cognac);display:block;font-size:13px;opacity:1;margin-bottom:2px;letter-spacing:0}
+
+/* ZONE BADGE */
+.zone-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(139,107,66,.15);border:1px solid rgba(139,107,66,.3);padding:8px 16px;margin-bottom:32px}
+.zone-badge-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--cognac)}
+.zone-badge-name{font-family:'Playfair Display',serif;font-size:16px;color:var(--cream);font-style:italic}
+
+/* MAIN */
+.main{max-width:960px;margin:0 auto;padding:52px 40px 80px}
+.section-label{font-size:9px;letter-spacing:.38em;color:var(--cognac);text-transform:uppercase;margin-bottom:14px;display:flex;align-items:center;gap:12px}
+.section-label::after{content:'';flex:1;height:1px;background:var(--soft)}
+
+/* DISCLAIMER */
+.disclaimer{background:rgba(196,104,58,.06);border-left:2px solid var(--warning);padding:12px 18px;font-size:11px;color:var(--muted);line-height:1.7;margin-bottom:40px;font-style:italic;font-family:'Playfair Display',serif}
+
+/* SLOT CARDS */
+.slots{display:flex;flex-direction:column;gap:2px;margin-bottom:48px}
+.slot{background:var(--cream);overflow:hidden}
+.slot-header{padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;user-select:none}
+.slot-header:hover{background:rgba(139,107,66,.03)}
+.slot-left{display:flex;align-items:center;gap:16px}
+.slot-icon{width:32px;height:32px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.slot-icon span{font-size:9px;letter-spacing:.1em;color:var(--cognac)}
+.slot-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;color:var(--ink)}
+.slot-status{font-size:10px;letter-spacing:.15em;text-transform:uppercase;padding:4px 10px}
+.slot-status.complete{background:rgba(74,124,89,.1);color:var(--success)}
+.slot-status.owned{background:rgba(26,26,22,.06);color:var(--muted)}
+.slot-status.optional{background:rgba(139,107,66,.08);color:var(--cognac)}
+.slot-toggle{font-size:18px;color:var(--muted);font-family:'Playfair Display',serif;transition:transform .3s}
+.slot.open .slot-toggle{transform:rotate(45deg)}
+
+.slot-body{display:none;padding:0 24px 24px;border-top:1px solid var(--soft)}
+.slot.open .slot-body{display:block}
+
+/* OPTIONS A/B/C/D */
+.options-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin:16px 0}
+.option-card{padding:16px;background:var(--cream-dark)}
+.option-card.primary{background:var(--ink)}
+.opt-label{font-size:8px;letter-spacing:.25em;text-transform:uppercase;margin-bottom:8px}
+.option-card.primary .opt-label{color:var(--cognac)}
+.option-card:not(.primary) .opt-label{color:var(--muted)}
+.opt-badge{display:inline-block;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:2px 8px;margin-bottom:6px;background:rgba(139,107,66,.15);color:var(--cognac)}
+.opt-name{font-size:13px;font-weight:500;margin-bottom:2px}
+.option-card.primary .opt-name{color:var(--cream)}
+.opt-brand{font-size:11px;color:var(--muted);margin-bottom:4px}
+.opt-price{font-family:'Playfair Display',serif;font-size:16px;color:var(--cognac);margin-bottom:8px}
+.opt-note{font-size:11px;color:var(--muted);line-height:1.6;font-style:italic}
+.option-card.primary .opt-note{color:rgba(245,241,233,.4)}
+.opt-avail{display:inline-flex;align-items:center;gap:4px;font-size:9px;letter-spacing:.1em;text-transform:uppercase;margin-top:8px}
+.avail-dot{width:6px;height:6px;border-radius:50%}
+.avail-dot.verified{background:var(--success)}
+.avail-dot.low{background:#D4943A}
+.avail-dot.check{background:var(--warning)}
+.opt-link{display:inline-block;margin-top:8px;font-size:10px;letter-spacing:.15em;color:var(--cognac);text-decoration:none;border-bottom:1px solid rgba(139,107,66,.3);padding-bottom:1px}
+
+/* SHIPPING */
+.shipping-check{background:rgba(74,124,89,.06);border-left:2px solid var(--success);padding:12px 16px;font-size:12px;color:var(--muted);line-height:1.7;margin-top:12px}
+.shipping-check strong{color:var(--success)}
+
+/* ALREADY OWNED */
+.owned-note{background:rgba(26,26,22,.04);padding:14px 16px;font-size:12px;color:var(--muted);line-height:1.65;font-style:italic;font-family:'Playfair Display',serif;margin:16px 0}
+
+/* CAPSULE SUMMARY */
+.summary{background:var(--ink);padding:32px;margin-bottom:48px}
+.sum-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--cream);margin-bottom:4px}
+.sum-sub{font-size:12px;color:rgba(245,241,233,.4);margin-bottom:24px}
+.sum-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px}
+.sum-item{background:rgba(255,255,255,.03);padding:16px}
+.sum-label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:rgba(245,241,233,.35);margin-bottom:6px}
+.sum-value{font-size:13px;color:var(--cream)}
+.sum-value.money{font-family:'Playfair Display',serif;font-size:20px;color:var(--cognac)}
+
+/* UPGRADE CTA */
+.upgrade-cta{background:var(--cream);padding:40px;text-align:center;border-top:2px solid var(--ink)}
+.uc-eyebrow{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--cognac);margin-bottom:16px}
+.uc-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;color:var(--ink);margin-bottom:8px}
+.uc-title em{font-style:italic;color:var(--cognac)}
+.uc-body{font-size:13px;color:var(--muted);line-height:1.75;max-width:480px;margin:0 auto 24px}
+.uc-zones{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:28px}
+.uc-zone{padding:8px 18px;border:1px solid var(--linen);font-size:11px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase}
+.uc-zone.current{border-color:var(--cognac);color:var(--cognac);background:rgba(139,107,66,.06)}
+.uc-zone.next{border-color:var(--ink);color:var(--ink)}
+.uc-btn{display:inline-block;padding:14px 36px;background:var(--ink);color:var(--cream);font-size:10px;letter-spacing:.25em;text-transform:uppercase;text-decoration:none;font-family:'DM Sans',sans-serif}
+
+/* GAPS */
+.gaps{background:rgba(196,104,58,.06);border-left:2px solid var(--warning);padding:16px 20px;margin-bottom:24px}
+.gaps-title{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--warning);margin-bottom:8px}
+.gaps-body{font-size:12px;color:var(--muted);line-height:1.75}
+
+@media(max-width:768px){
+  .options-grid{grid-template-columns:1fr}
+  .sum-grid{grid-template-columns:1fr 1fr}
+  .page-header{padding:32px 24px 28px}
+  .ph-title{font-size:30px}
+  .main{padding:32px 20px 60px}
+  .slot-header{padding:14px 16px}
+  .slot-body{padding:0 16px 20px}
+}
+</style>
+</head>
+<body>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="ph-eyebrow">Capsule Club · Your Curated Capsule</div>
+  <div class="zone-badge">
+    <span class="zone-badge-label">Zone</span>
+    <span class="zone-badge-name" id="zoneName">The Daily Edit</span>
+  </div>
+  <h1 class="ph-title" id="capsuleTitle">Your <em>Everyday</em><br/>Capsule.</h1>
+  <p class="ph-member" id="memberName">Curated for [Member Name] · [Season] [Year]</p>
+  <div class="ph-meta">
+    <div class="ph-meta-item"><strong id="brandCount">5</strong>Brands</div>
+    <div class="ph-meta-item"><strong id="pieceCount">7</strong>Pieces</div>
+    <div class="ph-meta-item"><strong id="totalRange">$420–$680</strong>Total range</div>
+    <div class="ph-meta-item"><strong id="capsuleStyle">Classic Minimalist</strong>Capsule style</div>
+    <div class="ph-meta-item"><strong id="curatedDate">April 2025</strong>Curated</div>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- DISCLAIMER -->
+  <div class="disclaimer">
+    Availability verified at time of curation. Stock changes daily — please confirm current availability before purchasing. If your first choice is unavailable, Options B, C, and D are equally curated for your capsule.
+  </div>
+
+  <!-- ZONE TABS (visual reference) -->
+  <div class="section-label">Your occasion zone</div>
+  <div class="uc-zones" style="justify-content:flex-start;margin-bottom:40px">
+    <div class="uc-zone current" id="zoneTab1">Everyday</div>
+    <div class="uc-zone" id="zoneTab2">Work</div>
+    <div class="uc-zone" id="zoneTab3">Weekend &amp; Social</div>
+  </div>
+
+  <!-- CAPSULE SLOTS -->
+  <div class="section-label">Your capsule</div>
+
+  <!-- SLOT TEMPLATE — repeats for each named slot -->
+  <div class="slots" id="capsuleSlots">
+
+    <!-- SLOT 1 — Your Everyday Denim -->
+    <div class="slot open" id="slot1">
+      <div class="slot-header" onclick="toggleSlot(1)">
+        <div class="slot-left">
+          <div class="slot-icon"><span>01</span></div>
+          <div class="slot-name">Your Everyday Denim</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="slot-status complete">Curated</span>
+          <span class="slot-toggle">+</span>
+        </div>
+      </div>
+      <div class="slot-body">
+        <div class="options-grid">
+          <!-- Option A — Our Pick -->
+          <div class="option-card primary">
+            <div class="opt-label">Our Pick</div>
+            <div class="opt-badge">Option A</div>
+            <div class="opt-name">Perfect Vintage Straight Jean</div>
+            <div class="opt-brand">Madewell</div>
+            <div class="opt-price">$128</div>
+            <div class="opt-note">Your go-to straight jean. Wears in beautifully over time, true to size in your 27. Available in the washed indigo that works with everything in your palette.</div>
+            <div class="opt-avail"><div class="avail-dot verified"></div><span style="color:var(--success);font-size:9px">In stock · Verified</span></div>
+            <a href="https://madewell.com" class="opt-link" target="_blank">Shop at Madewell →</a>
+          </div>
+          <!-- Option B -->
+          <div class="option-card">
+            <div class="opt-label">Same Brand Alt</div>
+            <div class="opt-badge">Option B</div>
+            <div class="opt-name">Baggy Straight Jean</div>
+            <div class="opt-brand">Madewell</div>
+            <div class="opt-price">$138</div>
+            <div class="opt-note">If you want a more relaxed silhouette this season — slightly wider through the thigh, still straight at the hem.</div>
+            <div class="opt-avail"><div class="avail-dot verified"></div><span style="font-size:9px">In stock · Verified</span></div>
+            <a href="https://madewell.com" class="opt-link" target="_blank">Shop at Madewell →</a>
+          </div>
+          <!-- Option C -->
+          <div class="option-card">
+            <div class="opt-label">Different Brand Alt</div>
+            <div class="opt-badge">Option C</div>
+            <div class="opt-name">Ultra High Rise Ankle Straight — Curve Love</div>
+            <div class="opt-brand">Abercrombie & Fitch</div>
+            <div class="opt-price">$90</div>
+            <div class="opt-note">Strong alternative if Madewell is out of stock. Multiple inseam options — specify Short/Regular/Long at checkout.</div>
+            <div class="opt-avail"><div class="avail-dot verified"></div><span style="font-size:9px">In stock · Verified</span></div>
+            <a href="https://abercrombie.com" class="opt-link" target="_blank">Shop at A&F →</a>
+          </div>
+          <!-- Option D -->
+          <div class="option-card">
+            <div class="opt-label">Budget Alt</div>
+            <div class="opt-badge">Option D</div>
+            <div class="opt-name">Vintage Soft High-Rise Straight Jean</div>
+            <div class="opt-brand">Gap</div>
+            <div class="opt-price">$79.95</div>
+            <div class="opt-note">Best budget alternative. True to size, available in most lengths. Classic straight that holds its shape through washing.</div>
+            <div class="opt-avail"><div class="avail-dot low"></div><span style="font-size:9px">Low stock — check before ordering</span></div>
+            <a href="https://gap.com" class="opt-link" target="_blank">Shop at Gap →</a>
+          </div>
+        </div>
+        <div class="shipping-check">
+          <strong>Free shipping note:</strong> This piece clears Madewell's $150 threshold when ordered with your knit. Order both together to qualify.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLOT 2 — Your Everyday Top (collapsed by default) -->
+    <div class="slot" id="slot2">
+      <div class="slot-header" onclick="toggleSlot(2)">
+        <div class="slot-left">
+          <div class="slot-icon"><span>02</span></div>
+          <div class="slot-name">Your Everyday Top</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="slot-status complete">Curated</span>
+          <span class="slot-toggle">+</span>
+        </div>
+      </div>
+      <div class="slot-body">
+        <p style="font-size:13px;color:var(--muted);font-style:italic;font-family:'Playfair Display',serif">Options A–D would appear here, following the same format as Your Everyday Denim above.</p>
+      </div>
+    </div>
+
+    <!-- SLOT 3 — Your White Tee -->
+    <div class="slot" id="slot3">
+      <div class="slot-header" onclick="toggleSlot(3)">
+        <div class="slot-left">
+          <div class="slot-icon"><span>03</span></div>
+          <div class="slot-name">Your White Tee</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="slot-status complete">Curated</span>
+          <span class="slot-toggle">+</span>
+        </div>
+      </div>
+      <div class="slot-body">
+        <p style="font-size:13px;color:var(--muted);font-style:italic;font-family:'Playfair Display',serif">Options A–D would appear here.</p>
+      </div>
+    </div>
+
+    <!-- SLOT 4 — Already Owned -->
+    <div class="slot" id="slot4">
+      <div class="slot-header" onclick="toggleSlot(4)">
+        <div class="slot-left">
+          <div class="slot-icon"><span>04</span></div>
+          <div class="slot-name">Your Knit</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="slot-status owned">Already owned</span>
+          <span class="slot-toggle">+</span>
+        </div>
+      </div>
+      <div class="slot-body">
+        <div class="owned-note">
+          You mentioned you already have a merino crew you love — we've kept this slot open. No action needed here. If you want to add a second knit colour later, we can revisit this in your next capsule.
+        </div>
+      </div>
+    </div>
+
+    <!-- SLOT 5 — Your Casual Layer -->
+    <div class="slot" id="slot5">
+      <div class="slot-header" onclick="toggleSlot(5)">
+        <div class="slot-left">
+          <div class="slot-icon"><span>05</span></div>
+          <div class="slot-name">Your Casual Layer</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="slot-status complete">Curated</span>
+          <span class="slot-toggle">+</span>
+        </div>
+      </div>
+      <div class="slot-body">
+        <p style="font-size:13px;color:var(--muted);font-style:italic;font-family:'Playfair Display',serif">Options A–D would appear here.</p>
+      </div>
+    </div>
+
+    <!-- SLOT 6 — Optional -->
+    <div class="slot" id="slot6">
+      <div class="slot-header" onclick="toggleSlot(6)">
+        <div class="slot-left">
+          <div class="slot-icon"><span>06</span></div>
+          <div class="slot-name">Your Everyday Bag</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px">
+          <span class="slot-status optional">Optional</span>
+          <span class="slot-toggle">+</span>
+        </div>
+      </div>
+      <div class="slot-body">
+        <p style="font-size:13px;color:var(--muted);font-style:italic;font-family:'Playfair Display',serif;margin-bottom:12px">Included because you flagged "bag" as a wardrobe gap. Options A–D would appear here.</p>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- GAPS & FLAGS -->
+  <div class="gaps">
+    <div class="gaps-title">Gaps &amp; flags</div>
+    <div class="gaps-body">
+      <strong>Outerwear:</strong> Your selected brands don't have a strong outerwear option in your budget this season. We've skipped this slot — flag it for your next capsule when budget allows or when the season requires it.<br/><br/>
+      <strong>Footwear:</strong> You didn't flag footwear as a gap, so we haven't included a shoe slot. If you'd like a shoe recommendation added to a future capsule, let us know.
+    </div>
+  </div>
+
+  <!-- CAPSULE SUMMARY -->
+  <div class="section-label" style="margin-bottom:16px">Capsule summary</div>
+  <div class="summary">
+    <div class="sum-title">The Daily Edit</div>
+    <div class="sum-sub">Your Everyday capsule · [Season] [Year]</div>
+    <div class="sum-grid">
+      <div class="sum-item">
+        <div class="sum-label">Pieces curated</div>
+        <div class="sum-value money">6</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">Budget range (Option A)</div>
+        <div class="sum-value money">$420–$580</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">Budget range (Option D)</div>
+        <div class="sum-value money">$280–$390</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">Brands used</div>
+        <div class="sum-value">Madewell · Gap · A&amp;F · Uniqlo · Quince</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">Capsule style</div>
+        <div class="sum-value">Classic Minimalist</div>
+      </div>
+      <div class="sum-item">
+        <div class="sum-label">Slots skipped</div>
+        <div class="sum-value">Outerwear (budget), Shoe (not flagged)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UPGRADE CTA — always present, zone-aware -->
+  <div class="upgrade-cta">
+    <div class="uc-eyebrow">Your capsule is complete</div>
+    <h2 class="uc-title">Ready to build your<br/><em>Work capsule</em> next?</h2>
+    <p class="uc-body">Your brands, budget, and preferences are already saved. When you're ready to tackle your office wardrobe, just say the word — we'll pick up right where we left off.</p>
+    <div class="uc-zones">
+      <div class="uc-zone current">✓ Everyday</div>
+      <div class="uc-zone next">Work →</div>
+      <div class="uc-zone">Weekend &amp; Social</div>
+    </div>
+    <a href="#" class="uc-btn">Start My Work Capsule</a>
+  </div>
+
+</div>
+
+<script>
+function toggleSlot(n) {
+  const slot = document.getElementById('slot' + n);
+  slot.classList.toggle('open');
+}
+
+// Zone switcher demo
+const zones = {
+  everyday: { name: 'The Daily Edit', title: 'Your <em>Everyday</em><br/>Capsule.', tab1: 'current', tab2: '', tab3: '' },
+  work:     { name: 'The Office Edit', title: 'Your <em>Work</em><br/>Capsule.', tab1: '', tab2: 'current', tab3: '' },
+  weekend:  { name: 'The Going-Out Edit', title: 'Your <em>Weekend &amp; Social</em><br/>Capsule.', tab1: '', tab2: '', tab3: 'current' },
+};
+
+function setZone(z) {
+  const d = zones[z];
+  document.getElementById('zoneName').textContent = d.name;
+  document.getElementById('capsuleTitle').innerHTML = d.title;
+  ['1','2','3'].forEach((n,i) => {
+    const tab = document.getElementById('zoneTab' + n);
+    tab.className = 'uc-zone' + (Object.values(d)[2+i] === 'current' ? ' current' : '');
+    document.querySelector('.uc-zones .uc-zone.current') && null;
+  });
+}
+// Update slot names based on zone
+const slotNames = {
+  everyday: ['Your Everyday Denim','Your Everyday Top','Your White Tee','Your Knit','Your Casual Layer','Your Everyday Bag'],
+  work:     ['Your Work Trouser','Your Blazer','Your Work Top','Your Shirt','Your Work Knit','Your Work Bag'],
+  weekend:  ['Your Going-Out Top','Your Evening Bottom','Your Smart Casual Dress','Your Elevated Layer','Your Social Bag','Your Statement Piece'],
+};
+</script>
+</body>
+</html>
