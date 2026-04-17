@@ -1,0 +1,1376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capsule Club — Build your capsule. Shop your brands.</title>
+<meta name="description" content="Capsule Club builds personalised capsule wardrobes from the brands you already love. Tell us your five brands. We'll build your wardrobe.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400;1,500&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=EB+Garamond:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --cream:#F5F1E9;--cream-mid:#EDE8DC;--cream-dark:#E3DDD0;
+  --ink:#1A1A16;--ink-soft:#2A2A24;
+  --cognac:#8B6B42;--cognac-light:#A8895E;
+  --linen:#C9BFA9;--muted:#7A7468;--soft:#E6DFD1;--success:#4A7C59;
+}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden;cursor:none}
+a{color:inherit;text-decoration:none}
+button{font-family:'DM Sans',sans-serif;cursor:none}
+
+/* CURSOR */
+.cur{width:8px;height:8px;background:var(--ink);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:transform .1s,background .2s;mix-blend-mode:multiply}
+.cur-r{width:30px;height:30px;border:1px solid var(--ink);border-radius:50%;position:fixed;top:0;left:0;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:transform .38s ease,width .25s,height .25s,opacity .25s;opacity:.3}
+.cur.big{transform:translate(-50%,-50%) scale(3);background:var(--cognac)}
+.cur-r.big{opacity:.12}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 48px;display:flex;align-items:center;justify-content:space-between;transition:background .3s,backdrop-filter .3s}
+nav.scrolled{background:rgba(245,241,233,.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--soft)}
+.nav-logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:400;letter-spacing:.02em}
+.nav-logo em{font-style:italic;color:var(--cognac)}
+.nav-links{display:flex;gap:32px;align-items:center}
+.nav-links a{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);transition:color .2s}
+.nav-links a:hover{color:var(--ink)}
+.nav-cta{padding:10px 22px;background:var(--ink);color:var(--cream);font-size:10px;letter-spacing:.2em;text-transform:uppercase;border:none;transition:background .2s}
+.nav-cta:hover{background:var(--cognac)}
+.nav-mob{display:none;background:none;border:none;padding:4px}
+.nav-mob span{display:block;width:22px;height:1px;background:var(--ink);margin:5px 0;transition:all .3s}
+
+/* PAGE SYSTEM */
+.page{display:none;min-height:100vh}
+.page.active{display:block}
+
+/* ═══════════════════════════
+   HOME PAGE
+═══════════════════════════ */
+
+/* HERO */
+.hero{min-height:100vh;display:grid;grid-template-rows:1fr auto;padding:120px 48px 60px;position:relative;overflow:hidden}
+.hero-bg{position:absolute;inset:0;background:linear-gradient(165deg,var(--cream) 0%,var(--cream-mid) 60%,var(--cream-dark) 100%);z-index:0}
+.hero-grain{position:absolute;inset:0;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");z-index:1}
+.hero-inner{position:relative;z-index:2;max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.hero-left{}
+.hero-eyebrow{font-size:10px;letter-spacing:.4em;text-transform:uppercase;color:var(--cognac);margin-bottom:24px;display:flex;align-items:center;gap:12px}
+.hero-eyebrow::before{content:'';width:32px;height:1px;background:var(--cognac)}
+.hero-h1{font-family:'Playfair Display',serif;font-size:clamp(42px,5vw,72px);font-weight:400;line-height:1.02;letter-spacing:-.02em;color:var(--ink);margin-bottom:28px}
+.hero-h1 em{font-style:italic;color:var(--cognac)}
+.hero-sub{font-size:17px;line-height:1.8;color:var(--muted);max-width:420px;margin-bottom:44px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:48px}
+.btn-primary{padding:15px 36px;background:var(--ink);color:var(--cream);font-size:10px;letter-spacing:.22em;text-transform:uppercase;border:none;transition:background .2s;display:inline-block}
+.btn-primary:hover{background:var(--cognac)}
+.btn-ghost{padding:15px 36px;background:transparent;color:var(--ink);font-size:10px;letter-spacing:.22em;text-transform:uppercase;border:1px solid var(--linen);transition:all .2s;display:inline-block}
+.btn-ghost:hover{border-color:var(--ink)}
+.hero-proof{display:flex;gap:32px;flex-wrap:wrap}
+.proof-item{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.proof-dot{width:4px;height:4px;background:var(--cognac);border-radius:50%;flex-shrink:0}
+
+/* HERO RIGHT — brand orbit visual */
+.hero-right{position:relative;height:520px}
+.orbit-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:160px;height:160px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:4px}
+.oc-label{font-size:8px;letter-spacing:.3em;color:var(--cognac);text-transform:uppercase}
+.oc-name{font-family:'Playfair Display',serif;font-size:20px;color:var(--cream);font-style:italic}
+.brand-pill{position:absolute;background:var(--cream);border:1px solid var(--soft);padding:10px 18px;font-size:11px;letter-spacing:.1em;color:var(--ink);white-space:nowrap;transition:all .3s;animation:float 6s ease-in-out infinite}
+.brand-pill:hover{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+.bp1{top:8%;left:10%;animation-delay:0s}
+.bp2{top:12%;right:5%;animation-delay:.8s}
+.bp3{top:38%;left:2%;animation-delay:1.6s}
+.bp4{top:38%;right:2%;animation-delay:.4s}
+.bp5{bottom:28%;left:8%;animation-delay:1.2s}
+.bp6{bottom:28%;right:8%;animation-delay:2s}
+.bp7{bottom:8%;left:25%;animation-delay:.6s}
+.bp8{bottom:8%;right:22%;animation-delay:1.8s}
+.connector{position:absolute;top:50%;left:50%;width:1px;background:linear-gradient(var(--soft),transparent);transform-origin:top;z-index:0;opacity:.4}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+
+/* THE $802 SECTION */
+.s802{background:var(--ink);padding:100px 48px}
+.s802-inner{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.s802-text{}
+.s-eyebrow{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--cognac);margin-bottom:20px}
+.s802-h2{font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,52px);font-weight:400;line-height:1.1;color:var(--cream);margin-bottom:24px}
+.s802-h2 em{font-style:italic;color:var(--cognac)}
+.s802-body{font-size:15px;line-height:1.85;color:rgba(245,241,233,.55);margin-bottom:32px}
+.s802-quote{border-left:2px solid var(--cognac);padding:4px 0 4px 24px;font-family:'EB Garamond',serif;font-size:21px;font-style:italic;color:var(--linen);line-height:1.5;margin-bottom:32px}
+.s802-link{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cognac);display:inline-flex;align-items:center;gap:8px;border-bottom:1px solid rgba(139,107,66,.3);padding-bottom:2px}
+.s802-cart{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);padding:28px}
+.cart-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--cognac);margin-bottom:16px}
+.cart-items{display:flex;flex-direction:column;gap:0}
+.cart-item{display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:rgba(245,241,233,.6)}
+.ci-name{color:var(--cream)}
+.cart-total{display:flex;justify-content:space-between;padding-top:16px;margin-top:4px;border-top:1px solid rgba(255,255,255,.15);align-items:baseline}
+.ct-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted)}
+.ct-num{font-family:'Playfair Display',serif;font-size:36px;color:var(--cream)}
+.cart-btn{display:block;width:100%;margin-top:16px;padding:14px;background:rgba(255,255,255,.06);color:rgba(245,241,233,.25);font-size:10px;letter-spacing:.3em;text-align:center;border:none;position:relative;overflow:hidden}
+.cart-btn::after{content:'We built this for you.';position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:var(--cognac);color:var(--cream);font-size:10px;letter-spacing:.2em;opacity:0;transition:opacity .3s}
+.cart-btn:hover::after{opacity:1}
+
+/* HOW IT WORKS STRIP */
+.how-strip{padding:100px 48px;background:var(--cream-mid)}
+.how-inner{max-width:1100px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:64px}
+.sh-eyebrow{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--cognac);margin-bottom:16px}
+.sh-h2{font-family:'Playfair Display',serif;font-size:clamp(28px,3.5vw,46px);font-weight:400;line-height:1.1;margin-bottom:12px}
+.sh-h2 em{font-style:italic;color:var(--cognac)}
+.sh-sub{font-size:14px;color:var(--muted);line-height:1.75;max-width:480px;margin:0 auto}
+.how-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
+.how-step{background:var(--cream);padding:36px 28px;position:relative}
+.hs-num{font-family:'Playfair Display',serif;font-size:52px;color:var(--soft);line-height:1;margin-bottom:20px}
+.hs-title{font-size:15px;font-weight:500;color:var(--ink);margin-bottom:10px}
+.hs-body{font-size:13px;color:var(--muted);line-height:1.75}
+.how-step::after{content:'→';position:absolute;top:50%;right:-12px;transform:translateY(-50%);font-size:16px;color:var(--linen);z-index:2}
+.how-step:last-child::after{display:none}
+
+/* ZONES SECTION */
+.zones{padding:100px 48px;background:var(--cream)}
+.zones-inner{max-width:1100px;margin:0 auto}
+.zones-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px}
+.zone-card{padding:48px 36px;position:relative;overflow:hidden;cursor:none}
+.zone-card.z-everyday{background:var(--ink);color:var(--cream)}
+.zone-card.z-work{background:var(--cognac);color:var(--cream)}
+.zone-card.z-weekend{background:var(--cream-dark);color:var(--ink)}
+.zc-num{font-family:'Playfair Display',serif;font-size:64px;font-weight:400;line-height:1;margin-bottom:8px;opacity:.15}
+.zc-label{font-size:9px;letter-spacing:.35em;text-transform:uppercase;margin-bottom:16px;opacity:.6}
+.zc-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;font-style:italic;margin-bottom:16px;line-height:1.2}
+.zc-body{font-size:13px;line-height:1.8;opacity:.65;margin-bottom:28px}
+.zc-slots{display:flex;flex-direction:column;gap:6px}
+.zc-slot{font-size:11px;letter-spacing:.05em;opacity:.55;display:flex;align-items:center;gap:8px}
+.zc-slot::before{content:'';width:16px;height:1px;background:currentColor;flex-shrink:0}
+.zc-upgrade{margin-top:20px;font-size:10px;letter-spacing:.18em;text-transform:uppercase;opacity:.5}
+
+/* BRANDS PREVIEW */
+.brands-preview{padding:80px 48px;background:var(--cream-mid);overflow:hidden}
+.bp-inner{max-width:1100px;margin:0 auto}
+.brands-ticker{display:flex;gap:0;margin-top:40px;overflow:hidden}
+.ticker-track{display:flex;gap:2px;animation:ticker 25s linear infinite;flex-shrink:0}
+.ticker-item{background:var(--cream);padding:18px 28px;white-space:nowrap;font-size:12px;letter-spacing:.12em;color:var(--muted);flex-shrink:0;border:1px solid var(--soft);transition:all .2s}
+.ticker-item:hover{background:var(--ink);color:var(--cream);border-color:var(--ink)}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* PRICING STRIP */
+.pricing-strip{padding:100px 48px;background:var(--ink)}
+.ps-inner{max-width:800px;margin:0 auto;text-align:center}
+.ps-eyebrow{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--cognac);margin-bottom:20px}
+.ps-h2{font-family:'Playfair Display',serif;font-size:clamp(28px,4vw,48px);font-weight:400;line-height:1.1;color:var(--cream);margin-bottom:16px}
+.ps-h2 em{font-style:italic;color:var(--cognac)}
+.ps-sub{font-size:14px;color:rgba(245,241,233,.45);line-height:1.75;margin-bottom:52px}
+.ps-plans{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:40px;text-align:left}
+.ps-plan{padding:36px 32px}
+.ps-plan.club{background:rgba(255,255,255,.05)}
+.ps-plan.clubplus{background:var(--cognac)}
+.psp-label{font-size:9px;letter-spacing:.3em;text-transform:uppercase;margin-bottom:12px;opacity:.6}
+.ps-plan.clubplus .psp-label{color:rgba(245,241,233,.7)}
+.psp-price{font-family:'Playfair Display',serif;font-size:44px;color:var(--cream);line-height:1;margin-bottom:4px}
+.psp-period{font-size:11px;color:rgba(245,241,233,.4);margin-bottom:20px}
+.psp-features{display:flex;flex-direction:column;gap:8px;margin-bottom:28px}
+.psp-feat{font-size:13px;color:rgba(245,241,233,.65);display:flex;align-items:flex-start;gap:8px;line-height:1.55}
+.psp-feat::before{content:'→';color:var(--cognac);flex-shrink:0;font-size:11px;margin-top:2px}
+.ps-plan.clubplus .psp-feat{color:rgba(245,241,233,.85)}
+.ps-plan.clubplus .psp-feat::before{color:rgba(245,241,233,.7)}
+.psp-btn{display:block;padding:13px 24px;font-size:10px;letter-spacing:.2em;text-transform:uppercase;border:none;text-align:center;transition:all .2s}
+.ps-plan.club .psp-btn{background:var(--cognac);color:var(--cream)}
+.ps-plan.club .psp-btn:hover{background:var(--cognac-light)}
+.ps-plan.clubplus .psp-btn{background:var(--ink);color:var(--cream)}
+.ps-plan.clubplus .psp-btn:hover{background:rgba(26,26,22,.8)}
+.ps-note{font-size:11px;color:rgba(245,241,233,.3);text-align:center;line-height:1.7}
+
+/* TESTIMONIAL */
+.testimony{padding:80px 48px;background:var(--cream)}
+.test-inner{max-width:720px;margin:0 auto;text-align:center}
+.test-q{font-family:'EB Garamond',serif;font-size:clamp(22px,3vw,34px);font-style:italic;color:var(--ink);line-height:1.5;margin-bottom:24px}
+.test-attr{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted)}
+
+/* FINAL CTA */
+.final-cta{padding:120px 48px;background:var(--cream-mid);text-align:center}
+.fc-inner{max-width:640px;margin:0 auto}
+.fc-eyebrow{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--cognac);margin-bottom:24px}
+.fc-h2{font-family:'Playfair Display',serif;font-size:clamp(32px,4.5vw,60px);font-weight:400;line-height:1.05;color:var(--ink);margin-bottom:20px}
+.fc-h2 em{font-style:italic;color:var(--cognac)}
+.fc-sub{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:44px}
+.fc-form{display:flex;gap:0;max-width:440px;margin:0 auto 16px}
+.fc-input{flex:1;padding:16px 20px;background:var(--cream);border:1px solid var(--linen);font-size:13px;color:var(--ink);outline:none;font-family:'DM Sans',sans-serif;font-weight:300;transition:border .2s}
+.fc-input:focus{border-color:var(--cognac)}
+.fc-input::placeholder{color:var(--muted)}
+.fc-submit{padding:16px 28px;background:var(--ink);color:var(--cream);border:none;font-size:10px;letter-spacing:.2em;text-transform:uppercase;transition:background .2s;white-space:nowrap}
+.fc-submit:hover{background:var(--cognac)}
+.fc-fine{font-size:11px;color:var(--muted);font-style:italic}
+
+/* ═══════════════════════════
+   HOW IT WORKS PAGE
+═══════════════════════════ */
+.page-hero{padding:140px 48px 80px;background:var(--ink)}
+.ph-inner{max-width:1000px;margin:0 auto}
+.ph-eyebrow{font-size:9px;letter-spacing:.4em;text-transform:uppercase;color:var(--cognac);margin-bottom:20px}
+.ph-h1{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,68px);font-weight:400;line-height:1.05;color:var(--cream);margin-bottom:16px}
+.ph-h1 em{font-style:italic;color:var(--cognac)}
+.ph-sub{font-size:16px;color:rgba(245,241,233,.5);line-height:1.8;max-width:540px}
+
+.hiw-steps{padding:80px 48px;background:var(--cream)}
+.hiw-inner{max-width:900px;margin:0 auto}
+.hiw-step-full{display:grid;grid-template-columns:80px 1fr;gap:48px;align-items:start;padding:52px 0;border-bottom:1px solid var(--soft)}
+.hiw-step-full:last-child{border-bottom:none}
+.hsf-num{font-family:'Playfair Display',serif;font-size:64px;color:var(--soft);line-height:1;padding-top:8px}
+.hsf-content{}
+.hsf-label{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--cognac);margin-bottom:12px}
+.hsf-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;margin-bottom:16px;line-height:1.2}
+.hsf-body{font-size:15px;line-height:1.85;color:var(--muted);margin-bottom:20px}
+.hsf-detail{background:var(--cream-mid);padding:20px 24px;font-size:13px;color:var(--muted);line-height:1.75;font-style:italic;font-family:'EB Garamond',serif}
+
+.zone-explainer{padding:80px 48px;background:var(--cream-mid)}
+.ze-inner{max-width:900px;margin:0 auto}
+.ze-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;margin-top:48px}
+.ze-card{padding:40px 32px}
+.ze-card:nth-child(1){background:var(--ink)}
+.ze-card:nth-child(2){background:var(--cognac)}
+.ze-card:nth-child(3){background:var(--cream-dark)}
+.zec-edit{font-size:9px;letter-spacing:.3em;text-transform:uppercase;margin-bottom:8px}
+.ze-card:nth-child(1) .zec-edit,.ze-card:nth-child(2) .zec-edit{color:rgba(245,241,233,.45)}
+.ze-card:nth-child(3) .zec-edit{color:var(--muted)}
+.zec-name{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;margin-bottom:16px}
+.ze-card:nth-child(1) .zec-name,.ze-card:nth-child(2) .zec-name{color:var(--cream)}
+.ze-card:nth-child(3) .zec-name{color:var(--ink)}
+.zec-slots{display:flex;flex-direction:column;gap:6px}
+.zec-slot{font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.08)}
+.ze-card:nth-child(3) .zec-slot{border-color:var(--soft)}
+.ze-card:nth-child(1) .zec-slot,.ze-card:nth-child(2) .zec-slot{color:rgba(245,241,233,.6)}
+.ze-card:nth-child(3) .zec-slot{color:var(--muted)}
+.ze-progression{margin-top:40px;padding:28px 32px;background:var(--cream);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.zep-text{font-size:14px;color:var(--muted);line-height:1.6;max-width:560px;font-style:italic;font-family:'EB Garamond',serif}
+.zep-pills{display:flex;gap:4px}
+.zep-pill{padding:6px 14px;font-size:10px;letter-spacing:.12em;text-transform:uppercase}
+.zep-pill.done{background:var(--ink);color:var(--cognac)}
+.zep-pill.next{border:1px solid var(--ink);color:var(--ink)}
+.zep-pill.later{border:1px solid var(--linen);color:var(--muted)}
+
+/* ═══════════════════════════
+   PRICING PAGE
+═══════════════════════════ */
+.pricing-hero{padding:140px 48px 80px;background:var(--cream-mid)}
+.pricing-plans{padding:0 48px 80px;background:var(--cream-mid)}
+.pricing-inner{max-width:860px;margin:0 auto}
+.plans-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px;margin-bottom:60px}
+.plan-card{padding:52px 44px}
+.plan-card.the-club{background:var(--cream)}
+.plan-card.club-plus{background:var(--ink)}
+.pc-popular{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--cognac);margin-bottom:16px;display:block}
+.pc-name{font-family:'Playfair Display',serif;font-size:22px;font-weight:400;margin-bottom:4px}
+.plan-card.club-plus .pc-name{color:var(--cream)}
+.pc-tagline{font-size:12px;color:var(--muted);margin-bottom:28px;line-height:1.5}
+.plan-card.club-plus .pc-tagline{color:rgba(245,241,233,.4)}
+.pc-price{font-family:'Playfair Display',serif;font-size:52px;line-height:1;margin-bottom:4px}
+.plan-card.the-club .pc-price{color:var(--ink)}
+.plan-card.club-plus .pc-price{color:var(--cream)}
+.pc-period{font-size:12px;color:var(--muted);margin-bottom:32px}
+.plan-card.club-plus .pc-period{color:rgba(245,241,233,.4)}
+.pc-divider{height:1px;margin-bottom:28px}
+.plan-card.the-club .pc-divider{background:var(--soft)}
+.plan-card.club-plus .pc-divider{background:rgba(255,255,255,.1)}
+.pc-features{display:flex;flex-direction:column;gap:12px;margin-bottom:36px}
+.pc-feat{font-size:13px;color:var(--muted);display:flex;align-items:flex-start;gap:10px;line-height:1.55}
+.pc-feat-check{color:var(--cognac);flex-shrink:0;font-size:11px;margin-top:2px}
+.plan-card.club-plus .pc-feat{color:rgba(245,241,233,.6)}
+.plan-card.club-plus .pc-feat-check{color:var(--cognac-light)}
+.pc-btn{display:block;padding:15px;text-align:center;font-size:10px;letter-spacing:.22em;text-transform:uppercase;border:none;transition:all .2s;width:100%}
+.plan-card.the-club .pc-btn{background:var(--ink);color:var(--cream)}
+.plan-card.the-club .pc-btn:hover{background:var(--cognac)}
+.plan-card.club-plus .pc-btn{background:var(--cognac);color:var(--cream)}
+.plan-card.club-plus .pc-btn:hover{background:var(--cognac-light)}
+.pricing-note{font-size:13px;color:var(--muted);text-align:center;line-height:1.8;padding:32px 0;border-top:1px solid var(--soft)}
+.pricing-note a{color:var(--cognac);border-bottom:1px solid rgba(139,107,66,.3)}
+.faq-preview{padding:80px 48px;background:var(--cream)}
+.faqp-inner{max-width:720px;margin:0 auto}
+.faq-item{padding:24px 0;border-bottom:1px solid var(--soft);cursor:none}
+.faq-q{font-size:15px;font-weight:400;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:16px}
+.faq-toggle{font-size:18px;color:var(--muted);flex-shrink:0;transition:transform .3s;font-family:'Playfair Display',serif}
+.faq-item.open .faq-toggle{transform:rotate(45deg)}
+.faq-a{display:none;font-size:14px;color:var(--muted);line-height:1.8;margin-top:14px;padding-right:32px}
+.faq-item.open .faq-a{display:block}
+
+/* ═══════════════════════════
+   THE BRANDS PAGE
+═══════════════════════════ */
+.brands-hero{padding:140px 48px 60px;background:var(--cream)}
+.brands-grid-page{padding:0 48px 100px;background:var(--cream)}
+.bg-inner{max-width:1100px;margin:0 auto}
+.brands-table{width:100%;border-collapse:collapse;margin-bottom:48px}
+.bt-head th{text-align:left;font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);padding:12px 16px;border-bottom:1px solid var(--linen);font-weight:400}
+.bt-row{transition:background .15s}
+.bt-row:hover{background:rgba(139,107,66,.04)}
+.bt-row td{padding:16px 16px;border-bottom:1px solid var(--soft);font-size:13px;vertical-align:middle}
+.bt-name{font-weight:500;font-family:'Playfair Display',serif;font-size:14px}
+.bt-tier{display:inline-block;font-size:8px;letter-spacing:.15em;text-transform:uppercase;padding:3px 9px}
+.bt-tier.acc{background:rgba(74,124,89,.1);color:var(--success)}
+.bt-tier.mid{background:rgba(139,107,66,.1);color:var(--cognac)}
+.bt-tier.prem{background:rgba(26,26,22,.07);color:var(--ink)}
+.bt-aff{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.bt-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.bt-dot.active{background:var(--success)}
+.bt-dot.limited{background:#D4943A}
+.bt-dot.none{background:var(--soft)}
+.brands-philosophy{padding:60px 48px;background:var(--cream-mid)}
+.bphil-inner{max-width:680px;margin:0 auto;text-align:center}
+.bphil-q{font-family:'EB Garamond',serif;font-size:clamp(20px,2.8vw,30px);font-style:italic;color:var(--ink);line-height:1.55;margin-bottom:20px}
+.bphil-body{font-size:14px;color:var(--muted);line-height:1.8}
+
+/* ═══════════════════════════
+   ABOUT PAGE
+═══════════════════════════ */
+.about-hero{padding:140px 48px 80px;background:var(--cream-mid)}
+.about-story{padding:80px 48px;background:var(--cream)}
+.as-inner{max-width:720px;margin:0 auto}
+.story-p{font-size:17px;line-height:1.9;color:var(--ink-soft);margin-bottom:28px}
+.story-p.lead{font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--ink);line-height:1.6}
+.story-callout{background:var(--ink);padding:32px 36px;margin:40px 0}
+.sc-quote{font-family:'EB Garamond',serif;font-size:22px;font-style:italic;color:var(--cream);line-height:1.5;margin-bottom:12px}
+.sc-attr{font-size:11px;letter-spacing:.2em;text-transform:uppercase;color:var(--cognac)}
+.about-values{padding:80px 48px;background:var(--cream-mid)}
+.av-inner{max-width:900px;margin:0 auto}
+.values-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px}
+.val-card{background:var(--cream);padding:36px 28px}
+.vc-num{font-family:'Playfair Display',serif;font-size:40px;color:var(--soft);margin-bottom:12px}
+.vc-title{font-size:14px;font-weight:500;margin-bottom:10px;color:var(--ink)}
+.vc-body{font-size:13px;color:var(--muted);line-height:1.75}
+.about-founder{padding:80px 48px;background:var(--ink)}
+.af-inner{max-width:800px;margin:0 auto;display:grid;grid-template-columns:200px 1fr;gap:56px;align-items:start}
+.af-avatar{width:200px;height:240px;background:var(--cream-dark);display:flex;align-items:center;justify-content:center}
+.af-initials{font-family:'Playfair Display',serif;font-size:48px;color:var(--cognac);font-style:italic}
+.af-content{}
+.af-eyebrow{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--cognac);margin-bottom:12px}
+.af-name{font-family:'Playfair Display',serif;font-size:32px;color:var(--cream);margin-bottom:4px}
+.af-title{font-size:12px;color:rgba(245,241,233,.4);letter-spacing:.1em;margin-bottom:24px}
+.af-bio{font-size:15px;line-height:1.85;color:rgba(245,241,233,.6)}
+
+/* ═══════════════════════════
+   FAQ PAGE
+═══════════════════════════ */
+.faq-hero{padding:140px 48px 80px;background:var(--cream)}
+.faq-content{padding:0 48px 100px;background:var(--cream)}
+.faq-content-inner{max-width:720px;margin:0 auto}
+.faq-section-title{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:4px;margin-top:52px}
+.faq-section-title:first-child{margin-top:0}
+.faq-section-sub{font-size:12px;color:var(--muted);margin-bottom:24px}
+
+/* ═══════════════════════════
+   BLOG PAGE
+═══════════════════════════ */
+.blog-hero{padding:140px 48px 60px;background:var(--cream)}
+.blog-grid{padding:0 48px 100px;background:var(--cream)}
+.blog-inner{max-width:1000px;margin:0 auto}
+.blog-posts{display:grid;grid-template-columns:2fr 1fr;gap:2px}
+.post-featured{background:var(--ink);padding:52px;cursor:none}
+.pf-issue{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:var(--cognac);margin-bottom:16px}
+.pf-title{font-family:'Playfair Display',serif;font-size:clamp(24px,3vw,36px);font-weight:400;line-height:1.15;color:var(--cream);margin-bottom:16px}
+.pf-title em{font-style:italic;color:var(--cognac)}
+.pf-excerpt{font-size:14px;color:rgba(245,241,233,.5);line-height:1.8;margin-bottom:28px}
+.pf-meta{font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:rgba(245,241,233,.3)}
+.pf-link{display:inline-flex;align-items:center;gap:8px;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--cognac);border-bottom:1px solid rgba(139,107,66,.3);padding-bottom:2px;margin-top:20px}
+.blog-sidebar{display:flex;flex-direction:column;gap:2px}
+.post-small{background:var(--cream-mid);padding:28px;cursor:none;transition:background .2s}
+.post-small:hover{background:var(--cream-dark)}
+.ps-issue{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--cognac);margin-bottom:10px}
+.ps-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:400;line-height:1.3;color:var(--ink);margin-bottom:8px}
+.ps-meta{font-size:11px;color:var(--muted)}
+.ps-coming{background:var(--soft);padding:28px;text-align:center}
+.psc-label{font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.psc-title{font-family:'Playfair Display',serif;font-size:16px;color:var(--ink);font-style:italic;line-height:1.4}
+.newsletter-strip{margin-top:2px;background:var(--cognac);padding:40px 52px;display:flex;align-items:center;justify-content:space-between;gap:32px;flex-wrap:wrap}
+.ns-text{}
+.ns-label{font-size:9px;letter-spacing:.35em;text-transform:uppercase;color:rgba(245,241,233,.6);margin-bottom:6px}
+.ns-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--cream)}
+.ns-form{display:flex;gap:0}
+.ns-input{padding:13px 18px;background:rgba(255,255,255,.15);border:none;color:var(--cream);font-size:13px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;min-width:260px}
+.ns-input::placeholder{color:rgba(245,241,233,.5)}
+.ns-btn{padding:13px 20px;background:var(--ink);color:var(--cream);border:none;font-size:10px;letter-spacing:.2em;text-transform:uppercase;white-space:nowrap}
+
+/* ═══════════════════════════
+   CONTACT PAGE
+═══════════════════════════ */
+.contact-hero{padding:140px 48px 80px;background:var(--cream)}
+.contact-content{padding:0 48px 100px;background:var(--cream)}
+.cc-inner{max-width:800px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
+.cc-form{}
+.form-group{margin-bottom:20px}
+.form-label{font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:8px}
+.form-input,.form-select,.form-textarea{width:100%;padding:14px 16px;background:var(--cream-mid);border:1px solid var(--soft);color:var(--ink);font-size:14px;font-family:'DM Sans',sans-serif;font-weight:300;outline:none;transition:border .2s;-webkit-appearance:none}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--cognac)}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--muted)}
+.form-textarea{height:140px;resize:vertical}
+.form-btn{padding:15px 36px;background:var(--ink);color:var(--cream);border:none;font-size:10px;letter-spacing:.22em;text-transform:uppercase;transition:background .2s;width:100%}
+.form-btn:hover{background:var(--cognac)}
+.cc-info{}
+.ci-title{font-family:'Playfair Display',serif;font-size:22px;margin-bottom:16px}
+.ci-body{font-size:14px;color:var(--muted);line-height:1.8;margin-bottom:32px}
+.contact-item{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
+.contact-icon{width:32px;height:32px;background:var(--ink);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:var(--cognac)}
+.contact-text{}
+.contact-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.contact-value{font-size:14px;color:var(--ink)}
+
+/* ═══════════════════════════
+   FOOTER
+═══════════════════════════ */
+footer{background:var(--ink);padding:64px 48px 40px}
+.footer-inner{max-width:1100px;margin:0 auto}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:52px}
+.footer-brand{}
+.fb-logo{font-family:'Playfair Display',serif;font-size:22px;color:var(--cream);margin-bottom:8px}
+.fb-logo em{font-style:italic;color:var(--cognac)}
+.fb-tagline{font-size:12px;color:rgba(245,241,233,.35);line-height:1.6;margin-bottom:24px;max-width:240px}
+.fb-social{display:flex;gap:12px}
+.fb-soc-link{width:36px;height:36px;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:11px;color:rgba(245,241,233,.4);transition:all .2s}
+.fb-soc-link:hover{border-color:var(--cognac);color:var(--cognac)}
+.footer-col{}
+.fc-title{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:var(--cognac);margin-bottom:16px}
+.fc-links{display:flex;flex-direction:column;gap:10px}
+.fc-link{font-size:13px;color:rgba(245,241,233,.45);transition:color .2s}
+.fc-link:hover{color:var(--cream)}
+.footer-bottom{display:flex;align-items:center;justify-content:space-between;padding-top:32px;border-top:1px solid rgba(255,255,255,.06);flex-wrap:wrap;gap:16px}
+.fb-copy{font-size:11px;color:rgba(245,241,233,.25)}
+.fb-legal{display:flex;gap:24px}
+.fb-legal a{font-size:11px;color:rgba(245,241,233,.25);transition:color .2s}
+.fb-legal a:hover{color:rgba(245,241,233,.6)}
+
+/* ═══════════════════════════
+   MOBILE MENU
+═══════════════════════════ */
+.mob-menu{position:fixed;inset:0;background:var(--ink);z-index:200;display:none;flex-direction:column;padding:80px 40px 40px;transform:translateX(100%);transition:transform .4s cubic-bezier(.77,0,.18,1)}
+.mob-menu.open{transform:translateX(0);display:flex}
+.mob-close{position:absolute;top:20px;right:24px;background:none;border:none;color:var(--cream);font-size:28px;padding:8px}
+.mob-links{display:flex;flex-direction:column;gap:0;margin-bottom:40px;flex:1}
+.mob-link{font-family:'Playfair Display',serif;font-size:36px;font-weight:400;color:rgba(245,241,233,.5);padding:16px 0;border-bottom:1px solid rgba(255,255,255,.06);transition:color .2s;font-style:italic}
+.mob-link:hover,.mob-link.active{color:var(--cream)}
+.mob-cta{padding:16px;background:var(--cognac);color:var(--cream);text-align:center;font-size:11px;letter-spacing:.22em;text-transform:uppercase}
+
+/* RESPONSIVE */
+@media(max-width:1024px){
+  .hero-inner{grid-template-columns:1fr;gap:48px}
+  .hero-right{height:300px}
+  .s802-inner,.hiw-steps .hiw-inner{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr 1fr;gap:32px}
+  .cc-inner{grid-template-columns:1fr;gap:48px}
+  .af-inner{grid-template-columns:1fr;gap:32px}
+  .af-avatar{width:120px;height:120px}
+}
+@media(max-width:768px){
+  nav{padding:16px 24px}
+  .nav-links,.nav-cta{display:none}
+  .nav-mob{display:block}
+  .hero{padding:100px 24px 48px}
+  .hero-h1{font-size:42px}
+  .s802{padding:64px 24px}
+  .how-strip,.zones,.brands-preview,.pricing-strip,.testimony,.final-cta{padding:64px 24px}
+  .how-steps{grid-template-columns:1fr 1fr}
+  .how-step::after{display:none}
+  .zones-grid,.ze-grid,.values-grid{grid-template-columns:1fr}
+  .ps-plans,.plans-grid,.blog-posts{grid-template-columns:1fr}
+  .footer-top{grid-template-columns:1fr}
+  .page-hero,.ph-inner,.brands-hero,.faq-hero,.blog-hero,.about-hero,.contact-hero,.pricing-hero{padding-left:24px;padding-right:24px}
+  .hiw-steps,.brands-grid-page,.faq-content,.blog-grid,.about-story,.about-values,.about-founder,.zone-explainer,.contact-content,.pricing-plans,.faq-preview{padding-left:24px;padding-right:24px}
+  .fc-form{flex-direction:column}
+  .footer-inner{padding:0}
+  footer{padding:48px 24px 32px}
+  .hiw-step-full{grid-template-columns:48px 1fr;gap:24px}
+  .newsletter-strip{flex-direction:column;padding:32px 24px}
+  .ns-form{flex-direction:column}
+  .ns-input{min-width:auto}
+}
+</style>
+</head>
+<body>
+
+<!-- CURSOR -->
+<div class="cur" id="cur"></div>
+<div class="cur-r" id="curR"></div>
+
+<!-- NAV -->
+<nav id="mainNav">
+  <a class="nav-logo" onclick="showPage('home')"><em>Capsule</em> Club</a>
+  <div class="nav-links">
+    <a onclick="showPage('how')">How It Works</a>
+    <a onclick="showPage('brands')">The Brands</a>
+    <a onclick="showPage('about')">About</a>
+    <a onclick="showPage('blog')">Journal</a>
+    <a onclick="showPage('contact')">Contact</a>
+    <a class="nav-cta" href="quiz.html">Join the Club</a>
+  </div>
+  <button class="nav-mob" onclick="toggleMob()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mob-menu" id="mobMenu">
+  <button class="mob-close" onclick="toggleMob()">×</button>
+  <div class="mob-links">
+    <a class="mob-link" onclick="showPage('home');toggleMob()">Home</a>
+    <a class="mob-link" onclick="showPage('how');toggleMob()">How It Works</a>
+    <a class="mob-link" onclick="showPage('pricing');toggleMob()">Pricing</a>
+    <a class="mob-link" onclick="showPage('brands');toggleMob()">The Brands</a>
+    <a class="mob-link" onclick="showPage('about');toggleMob()">About</a>
+    <a class="mob-link" onclick="showPage('faq');toggleMob()">FAQ</a>
+    <a class="mob-link" onclick="showPage('blog');toggleMob()">Journal</a>
+    <a class="mob-link" onclick="showPage('contact');toggleMob()">Contact</a>
+  </div>
+  <a class="mob-cta" href="quiz.html">Join the Club →</a>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     HOME PAGE
+═══════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-grain"></div>
+    <div class="hero-inner">
+      <div class="hero-left">
+        <div class="hero-eyebrow">A new kind of wardrobe service</div>
+        <h1 class="hero-h1">Build your capsule.<br/><em>Shop your brands.</em></h1>
+        <p class="hero-sub">You already know which brands you love. We build your capsule wardrobe from those brands specifically — piece by piece, outfit by outfit, from the labels already in your wardrobe.</p>
+        <div class="hero-actions">
+          <a class="btn-primary" href="quiz.html">Join the Club →</a>
+          <button class="btn-ghost" onclick="showPage('how')">See How It Works</button>
+        </div>
+        <div class="hero-proof">
+          <div class="proof-item"><div class="proof-dot"></div>Your brands, not ours</div>
+          <div class="proof-item"><div class="proof-dot"></div>Three capsule zones</div>
+          <div class="proof-item"><div class="proof-dot"></div>From $12 / month</div>
+        </div>
+      </div>
+      <div class="hero-right">
+        <div class="orbit-center">
+          <span class="oc-label">Your brands</span>
+          <span class="oc-name">One capsule.</span>
+        </div>
+        <div class="brand-pill bp1">Madewell</div>
+        <div class="brand-pill bp2">Uniqlo</div>
+        <div class="brand-pill bp3">Everlane</div>
+        <div class="brand-pill bp4">COS</div>
+        <div class="brand-pill bp5">Sézane</div>
+        <div class="brand-pill bp6">Quince</div>
+        <div class="brand-pill bp7">Mango</div>
+        <div class="brand-pill bp8">Reformation</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- THE $802 STORY -->
+  <section class="s802">
+    <div class="s802-inner">
+      <div class="s802-text">
+        <div class="s-eyebrow">Why Capsule Club exists</div>
+        <h2 class="s802-h2">I had $802 in my cart.<br/><em>I didn't check out.</em></h2>
+        <p class="s802-body">I was building a capsule wardrobe from Quince — great brand, great prices, everything in one place. But when I saw the total, I closed the tab. Not because of the money. Because $800 at one brand felt like a catalogue. The same $800 spread across Madewell, Uniqlo, COS, and Quince feels like a wardrobe.</p>
+        <blockquote class="s802-quote">"Nobody actually shops from one brand. The advice was asking us to be someone we're not."</blockquote>
+        <p class="s802-body">Every capsule wardrobe guide told me to commit to one brand. But we're already multi-brand people — we have our Madewell jeans and our Uniqlo basics and that one COS blazer. Capsule Club works with how you actually shop.</p>
+        <a class="s802-link" onclick="showPage('about')" style="cursor:pointer">Read the full story →</a>
+      </div>
+      <div class="s802-cart">
+        <div class="cart-label">My actual cart · quince.com</div>
+        <div class="cart-items">
+          <div class="cart-item"><span class="ci-name">Collar Blouse — Black / S</span><span style="color:rgba(245,241,233,.35)">—</span></div>
+          <div class="cart-item"><span class="ci-name">Italian Wool Blazer — Brown / S</span><span>$100</span></div>
+          <div class="cart-item"><span class="ci-name">Relaxed Trousers — Ivory / S</span><span>$79.90</span></div>
+          <div class="cart-item"><span class="ci-name">Merino Mock-Neck — Camel / S</span><span>$59.90</span></div>
+          <div class="cart-item"><span style="color:rgba(245,241,233,.3);font-size:12px">+ 9 more items</span><span style="color:rgba(245,241,233,.3);font-size:12px">+ $563</span></div>
+        </div>
+        <div class="cart-total">
+          <div>
+            <div class="ct-label">Subtotal · 13 items</div>
+            <div class="ct-num">$802.80</div>
+          </div>
+        </div>
+        <button class="cart-btn">Checkout</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS STRIP -->
+  <section class="how-strip">
+    <div class="how-inner">
+      <div class="section-header">
+        <div class="sh-eyebrow">The process</div>
+        <h2 class="sh-h2">Four steps to your<br/><em>perfect capsule</em></h2>
+        <p class="sh-sub">From your quiz answers to your curated capsule in less than 48 hours.</p>
+      </div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="hs-num">01</div>
+          <div class="hs-title">Tell us your brands</div>
+          <div class="hs-body">Pick up to five brands you love. Choose your capsule zone — Everyday, Work, or Weekend & Social.</div>
+        </div>
+        <div class="how-step">
+          <div class="hs-num">02</div>
+          <div class="hs-title">We curate your pieces</div>
+          <div class="hs-body">We build your capsule from your exact brands — named pieces, outfit combinations, sizing notes.</div>
+        </div>
+        <div class="how-step">
+          <div class="hs-num">03</div>
+          <div class="hs-title">You receive your capsule</div>
+          <div class="hs-body">A beautifully formatted capsule PDF with four options per slot, free shipping strategy, and direct links.</div>
+        </div>
+        <div class="how-step">
+          <div class="hs-num">04</div>
+          <div class="hs-title">Build the next zone</div>
+          <div class="hs-body">Your preferences are saved. When you're ready for your next zone, we pick up right where we left off.</div>
+        </div>
+      </div>
+      <div style="text-align:center;margin-top:48px">
+        <button class="btn-primary" onclick="showPage('how')">See the full process →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- THREE ZONES -->
+  <section class="zones">
+    <div class="zones-inner">
+      <div class="section-header">
+        <div class="sh-eyebrow">The three capsule zones</div>
+        <h2 class="sh-h2">One zone at a time.<br/><em>A complete wardrobe over time.</em></h2>
+        <p class="sh-sub">Start where you need the most help. Your preferences carry forward to every zone you build.</p>
+      </div>
+      <div class="zones-grid">
+        <div class="zone-card z-everyday">
+          <div class="zc-num">01</div>
+          <div class="zc-label">Zone One</div>
+          <div class="zc-title">The Daily Edit</div>
+          <div class="zc-body">The foundation layer. Errands, casual plans, working from home, weekends. Pieces you reach for without thinking.</div>
+          <div class="zc-slots">
+            <div class="zc-slot">Your Everyday Denim</div>
+            <div class="zc-slot">Your Everyday Top</div>
+            <div class="zc-slot">Your Knit</div>
+            <div class="zc-slot">Your Casual Layer</div>
+            <div class="zc-slot">Your Everyday Bag</div>
+          </div>
+          <div class="zc-upgrade" style="margin-top:24px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;opacity:.4">6–8 pieces</div>
+        </div>
+        <div class="zone-card z-work">
+          <div class="zc-num">02</div>
+          <div class="zc-label">Zone Two</div>
+          <div class="zc-title">The Office Edit</div>
+          <div class="zc-body">Desk to dinner. Professional but not corporate — pieces that work 9–5 and carry into after-work plans.</div>
+          <div class="zc-slots">
+            <div class="zc-slot">Your Work Trouser</div>
+            <div class="zc-slot">Your Blazer</div>
+            <div class="zc-slot">Your Work Top</div>
+            <div class="zc-slot">Your Shirt</div>
+            <div class="zc-slot">Your Work Bag</div>
+          </div>
+          <div class="zc-upgrade" style="margin-top:24px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;opacity:.5">6–8 pieces</div>
+        </div>
+        <div class="zone-card z-weekend">
+          <div class="zc-num">03</div>
+          <div class="zc-label">Zone Three</div>
+          <div class="zc-title">The Going-Out Edit</div>
+          <div class="zc-body">Smart casual, evenings out, dinners, travel. Elevated casual that looks considered without requiring effort.</div>
+          <div class="zc-slots">
+            <div class="zc-slot">Your Going-Out Top</div>
+            <div class="zc-slot">Your Evening Bottom</div>
+            <div class="zc-slot">Your Smart Casual Dress</div>
+            <div class="zc-slot">Your Elevated Layer</div>
+            <div class="zc-slot">Your Social Bag</div>
+          </div>
+          <div class="zc-upgrade" style="margin-top:24px;font-size:10px;letter-spacing:.15em;text-transform:uppercase;opacity:.4">5–7 pieces</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BRANDS TICKER -->
+  <section class="brands-preview">
+    <div class="bp-inner">
+      <div class="section-header" style="text-align:left;margin-bottom:28px">
+        <div class="sh-eyebrow">21 brands and growing</div>
+        <h2 class="sh-h2" style="font-size:clamp(22px,2.5vw,32px)">Your favourites are probably already here.</h2>
+      </div>
+      <div class="brands-ticker">
+        <div class="ticker-track" id="t1">
+          <div class="ticker-item">Madewell</div><div class="ticker-item">Uniqlo</div><div class="ticker-item">Banana Republic</div><div class="ticker-item">Gap</div><div class="ticker-item">Quince</div><div class="ticker-item">Everlane</div><div class="ticker-item">COS</div><div class="ticker-item">Zara</div><div class="ticker-item">Mango</div><div class="ticker-item">Aritzia</div><div class="ticker-item">Reformation</div><div class="ticker-item">Sézane</div><div class="ticker-item">J.Crew</div><div class="ticker-item">A&F</div><div class="ticker-item">Anthropologie</div><div class="ticker-item">LOFT</div><div class="ticker-item">Universal Standard</div><div class="ticker-item">Cuyana</div>
+          <div class="ticker-item">Madewell</div><div class="ticker-item">Uniqlo</div><div class="ticker-item">Banana Republic</div><div class="ticker-item">Gap</div><div class="ticker-item">Quince</div><div class="ticker-item">Everlane</div><div class="ticker-item">COS</div><div class="ticker-item">Zara</div><div class="ticker-item">Mango</div><div class="ticker-item">Aritzia</div><div class="ticker-item">Reformation</div><div class="ticker-item">Sézane</div><div class="ticker-item">J.Crew</div><div class="ticker-item">A&F</div><div class="ticker-item">Anthropologie</div><div class="ticker-item">LOFT</div><div class="ticker-item">Universal Standard</div><div class="ticker-item">Cuyana</div>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:32px">
+      <button class="btn-ghost" onclick="showPage('brands')">See all 21 brands →</button>
+    </div>
+  </section>
+
+  <!-- PRICING STRIP -->
+  <section class="pricing-strip">
+    <div class="ps-inner">
+      <div class="ps-eyebrow">Simple, honest pricing</div>
+      <h2 class="ps-h2">Two plans.<br/><em>One wardrobe.</em></h2>
+      <p class="ps-sub">No styling fees. No minimum spend. Cancel or pause any time.</p>
+      <div class="ps-plans">
+        <div class="ps-plan club">
+          <div class="psp-label">The Club</div>
+          <div class="psp-price">$12</div>
+          <div class="psp-period">per month</div>
+          <div class="psp-features">
+            <div class="psp-feat">One capsule zone per season</div>
+            <div class="psp-feat">Up to 5 brands per capsule</div>
+            <div class="psp-feat">4 options per capsule slot</div>
+            <div class="psp-feat">Full sizing notes and fit guidance</div>
+            <div class="psp-feat">Direct brand links + free shipping strategy</div>
+          </div>
+          <a class="psp-btn" href="quiz.html">Join The Club →</a>
+        </div>
+        <div class="ps-plan clubplus">
+          <div class="psp-label">The Club+</div>
+          <div class="psp-price">$22</div>
+          <div class="psp-period">per month</div>
+          <div class="psp-features">
+            <div class="psp-feat">Everything in The Club</div>
+            <div class="psp-feat">Priority 24-hour turnaround</div>
+            <div class="psp-feat">Unlimited revision requests</div>
+            <div class="psp-feat">Seasonal capsule refresh check-in</div>
+            <div class="psp-feat">First access to new brands and features</div>
+          </div>
+          <a class="psp-btn" href="quiz.html">Join Club+ →</a>
+        </div>
+      </div>
+      <p class="ps-note">Affiliate disclosure: We earn a small commission when you purchase through our links, at no extra cost to you. This is how we keep subscription prices low. Your capsule is never influenced by commission — quality always comes first.</p>
+    </div>
+  </section>
+
+  <!-- TESTIMONIAL / PULL QUOTE -->
+  <section class="testimony">
+    <div class="test-inner">
+      <div class="test-q">"$800 spread across Quince, Madewell, COS, Everlane, and Uniqlo feels completely different from $800 at one checkout. Same wardrobe. Completely different experience of getting there."</div>
+      <div class="test-attr">Stephanie · Founder, Capsule Club</div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final-cta">
+    <div class="fc-inner">
+      <div class="fc-eyebrow">Join the founding members</div>
+      <h2 class="fc-h2">Your brands.<br/><em>One wardrobe.</em></h2>
+      <p class="fc-sub">Tell us your brands and we'll build your first capsule. Your preferences are saved forever — every future capsule starts from where you left off.</p>
+      <div class="fc-form">
+        <input class="fc-input" type="email" placeholder="Your email address" onkeydown="if(event.key==='Enter')window.location='quiz.html'" />
+        <button class="fc-submit" onclick="window.location='quiz.html'">Get Started →</button>
+      </div>
+      <p class="fc-fine">Starting from $12 / month. Cancel or pause any time. No commitment required.</p>
+    </div>
+  </section>
+
+</div>
+
+<!-- ═══════════════════════════════════════════
+     HOW IT WORKS PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-how">
+  <section class="page-hero">
+    <div class="ph-inner">
+      <div class="ph-eyebrow">The process</div>
+      <h1 class="ph-h1">How Capsule Club<br/><em>actually works.</em></h1>
+      <p class="ph-sub">From your first quiz question to a complete capsule in your inbox — here's exactly what to expect.</p>
+    </div>
+  </section>
+
+  <section class="hiw-steps">
+    <div class="hiw-inner">
+      <div class="hiw-step-full">
+        <div class="hsf-num">01</div>
+        <div class="hsf-content">
+          <div class="hsf-label">The quiz</div>
+          <h3 class="hsf-title">Tell us about your wardrobe — and your life.</h3>
+          <p class="hsf-body">Our style quiz takes about 8 minutes. You'll tell us your five brands, your capsule zone (Everyday, Work, or Weekend & Social), your budget per piece, your sizing notes, and what your biggest wardrobe problem actually is.</p>
+          <p class="hsf-body">We also ask about what you already own and love — because the best capsule works with your existing wardrobe, not against it. If you already have great denim, we skip that slot. If your bag situation is solved, we don't sell you another one.</p>
+          <div class="hsf-detail">"A capsule for someone working from home looks completely different from one for someone in an office five days a week. We need to understand your actual life before we recommend anything."</div>
+        </div>
+      </div>
+      <div class="hiw-step-full">
+        <div class="hsf-num">02</div>
+        <div class="hsf-content">
+          <div class="hsf-label">The curation</div>
+          <h3 class="hsf-title">We build your capsule from your exact brands.</h3>
+          <p class="hsf-body">Every piece we recommend comes from your selected brands. We don't suggest a better brand. We don't substitute one you didn't choose. If your brands can't strongly fill a slot, we tell you honestly and explain why.</p>
+          <p class="hsf-body">Each capsule slot gets four options: Option A (our top pick), Option B (a same-brand alternative), Option C (a different brand from your list), and Option D (a budget alternative). You always have a path forward, whatever happens with stock.</p>
+          <div class="hsf-detail">"We name the specific product — not 'a white tee from Gap' but 'the VintageSoft Tee in White, size S.' Vague recommendations are useless. We name names."</div>
+        </div>
+      </div>
+      <div class="hiw-step-full">
+        <div class="hsf-num">03</div>
+        <div class="hsf-content">
+          <div class="hsf-label">The delivery</div>
+          <h3 class="hsf-title">A beautifully formatted capsule in your inbox.</h3>
+          <p class="hsf-body">Your capsule arrives as a formatted PDF within 48 hours of completing your quiz. Each slot is named (not numbered), has all four options with direct brand links, notes on availability, a free shipping strategy for each brand, and sizing guidance specific to your measurements.</p>
+          <p class="hsf-body">Club+ members receive their capsule within 24 hours and can request revisions until they're happy with every slot.</p>
+          <div class="hsf-detail">"The capsule PDF ends with one line: 'Your Everyday capsule is complete. When you're ready for your Work capsule, your preferences are already saved.' That's the whole business model in one sentence."</div>
+        </div>
+      </div>
+      <div class="hiw-step-full">
+        <div class="hsf-num">04</div>
+        <div class="hsf-content">
+          <div class="hsf-label">The progression</div>
+          <h3 class="hsf-title">Your next capsule starts where this one ended.</h3>
+          <p class="hsf-body">When you're ready for your next zone, you don't start from scratch. Your brands, your budget, your sizing notes — all saved. We ask only what might have changed: new season, new brands, different wardrobe gap.</p>
+          <p class="hsf-body">Three zones. Three capsules. One complete wardrobe built over time, at a pace that suits your life and your budget.</p>
+          <div class="hsf-detail">"We deliberately don't offer a 'Full Rotation' upfront. A single zone first — low commitment, immediate value. Then we earn the next zone by delivering on the first."</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="zone-explainer">
+    <div class="ze-inner">
+      <div class="section-header" style="text-align:left">
+        <div class="sh-eyebrow">The three zones</div>
+        <h2 class="sh-h2">Choose one. <em>Build from there.</em></h2>
+        <p class="sh-sub" style="margin:0">Start where you need the most help. Everything else follows.</p>
+      </div>
+      <div class="ze-grid">
+        <div class="ze-card">
+          <div class="zec-edit">Zone 01</div>
+          <div class="zec-name">The Daily Edit</div>
+          <div class="zec-slots">
+            <div class="zec-slot">Your Everyday Denim</div>
+            <div class="zec-slot">Your Everyday Top</div>
+            <div class="zec-slot">Your White Tee</div>
+            <div class="zec-slot">Your Knit</div>
+            <div class="zec-slot">Your Casual Layer</div>
+            <div class="zec-slot">Your Everyday Bag</div>
+          </div>
+        </div>
+        <div class="ze-card">
+          <div class="zec-edit">Zone 02</div>
+          <div class="zec-name">The Office Edit</div>
+          <div class="zec-slots">
+            <div class="zec-slot">Your Work Trouser</div>
+            <div class="zec-slot">Your Blazer</div>
+            <div class="zec-slot">Your Work Top</div>
+            <div class="zec-slot">Your Shirt</div>
+            <div class="zec-slot">Your Work Knit</div>
+            <div class="zec-slot">Your Work Bag</div>
+          </div>
+        </div>
+        <div class="ze-card">
+          <div class="zec-edit">Zone 03</div>
+          <div class="zec-name">The Going-Out Edit</div>
+          <div class="zec-slots">
+            <div class="zec-slot">Your Going-Out Top</div>
+            <div class="zec-slot">Your Evening Bottom</div>
+            <div class="zec-slot">Your Smart Casual Dress</div>
+            <div class="zec-slot">Your Elevated Layer</div>
+            <div class="zec-slot">Your Social Bag</div>
+          </div>
+        </div>
+      </div>
+      <div class="ze-progression">
+        <p class="zep-text">"Once your first capsule is delivered, you'll be invited to add your next zone. Your brands and preferences carry over automatically — you just confirm what's changed."</p>
+        <div class="zep-pills">
+          <div class="zep-pill done">✓ Everyday</div>
+          <div class="zep-pill next">Work →</div>
+          <div class="zep-pill later">Weekend & Social</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="final-cta" style="background:var(--cream)">
+    <div class="fc-inner">
+      <div class="fc-eyebrow">Ready to start?</div>
+      <h2 class="fc-h2">Take the quiz.<br/><em>Get your capsule.</em></h2>
+      <p class="fc-sub">Eight minutes to complete. Forty-eight hours to your inbox. Your brands, your wardrobe.</p>
+      <div style="text-align:center">
+        <a class="btn-primary" href="quiz.html">Join the Club →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PRICING PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-pricing">
+  <section class="pricing-hero">
+    <div class="ph-inner">
+      <div class="ph-eyebrow">Pricing</div>
+      <h1 class="ph-h1">Simple pricing.<br/><em>Real wardrobes.</em></h1>
+      <p class="ph-sub">No styling fees. No minimum spend. Two plans that work for different lives.</p>
+    </div>
+  </section>
+
+  <section class="pricing-plans">
+    <div class="pricing-inner">
+      <div class="plans-grid">
+        <div class="plan-card the-club">
+          <span class="pc-popular">Most popular</span>
+          <div class="pc-name">The Club</div>
+          <div class="pc-tagline">For members building their capsule one zone at a time.</div>
+          <div class="pc-price">$12</div>
+          <div class="pc-period">per month · cancel or pause any time</div>
+          <div class="pc-divider"></div>
+          <div class="pc-features">
+            <div class="pc-feat"><span class="pc-feat-check">→</span>One capsule zone per season (Everyday, Work, or Weekend & Social)</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Up to five brands per capsule</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>4 options per slot — A, B, C, and D alternatives</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Named slots, not numbered lists</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Specific product names, direct brand links</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Full sizing guidance for your body</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Free shipping strategy per brand</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Preferences saved between zones</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>48-hour delivery</div>
+          </div>
+          <a class="pc-btn" href="quiz.html">Join The Club for $12 →</a>
+        </div>
+        <div class="plan-card club-plus">
+          <span class="pc-popular" style="color:rgba(245,241,233,.5)">For members who want more</span>
+          <div class="pc-name" style="color:var(--cream)">The Club+</div>
+          <div class="pc-tagline">Everything in The Club, with priority service and unlimited revisions.</div>
+          <div class="pc-price" style="color:var(--cream)">$22</div>
+          <div class="pc-period">per month · cancel or pause any time</div>
+          <div class="pc-divider"></div>
+          <div class="pc-features">
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Everything in The Club</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Priority 24-hour turnaround</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Unlimited revision requests until you're happy</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Seasonal refresh check-in between capsules</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>First access to new brands as they're added</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>First access to new features and tools</div>
+            <div class="pc-feat"><span class="pc-feat-check">→</span>Direct message access to Stephanie</div>
+          </div>
+          <a class="pc-btn" href="quiz.html">Join Club+ for $22 →</a>
+        </div>
+      </div>
+
+      <p class="pricing-note">Affiliate disclosure: We earn a small commission when you purchase through our recommended links, at no extra cost to you. This is one of two revenue streams (alongside your subscription) that keeps Capsule Club running. Your capsule is never influenced by commission — when two options are equal, we may prefer an affiliate brand, but we will never recommend an inferior piece to earn a commission. <a onclick="showPage('faq')" style="cursor:pointer">Learn more in our FAQ.</a></p>
+
+      <div class="faqp-inner" style="margin-top:0;padding:0">
+        <h3 style="font-family:'Playfair Display',serif;font-size:22px;margin-bottom:32px;margin-top:60px">Common questions about pricing</h3>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Can I pause instead of cancel? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">Yes — always. Life happens. You can pause your membership for up to three months and resume whenever you're ready. Your preferences, brands, and saved capsules are all preserved during a pause.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">What does "one capsule zone per season" mean? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">Each season (roughly quarterly), you can request one new capsule zone. You can either continue building the next zone (e.g. Work after Everyday) or refresh an existing zone for the new season. Club+ members can request a seasonal refresh check-in regardless.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Do I have to spend money on clothes to use Capsule Club? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">No. Your capsule is a recommendation, not an order. You buy what makes sense, when it makes sense. We flag what you already own and love so you never feel pressured to replace something that's working.</div>
+        </div>
+        <div class="faq-item" onclick="toggleFaq(this)">
+          <div class="faq-q">Is the $12 or $22 charged monthly? <span class="faq-toggle">+</span></div>
+          <div class="faq-a">Yes, monthly. No annual commitment required. If you'd prefer to pay annually at a discount, reach out — we're happy to discuss it once annual billing is set up.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     THE BRANDS PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-brands">
+  <section class="brands-hero page-hero" style="background:var(--cream-mid)">
+    <div class="ph-inner">
+      <div class="ph-eyebrow" style="color:var(--cognac)">The brand database</div>
+      <h1 class="ph-h1" style="color:var(--ink)">21 brands.<br/><em>Your favourites, we hope.</em></h1>
+      <p class="ph-sub" style="color:var(--muted)">Every brand in our database has been researched for sizing accuracy, quality consistency, and capsule suitability. We know what each one does well — and what to avoid.</p>
+    </div>
+  </section>
+
+  <section class="brands-grid-page">
+    <div class="bg-inner">
+      <table class="brands-table">
+        <thead class="bt-head">
+          <tr>
+            <th>Brand</th>
+            <th>Tier</th>
+            <th>Best for</th>
+            <th>Affiliate</th>
+            <th>Free shipping</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="bt-row"><td class="bt-name">Madewell</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Denim, casual tops, bags</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$150+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Uniqlo</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Knitwear, layering basics</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$75+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Banana Republic</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Tailored workwear</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$50+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Gap</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Everyday basics, denim</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$50+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Quince</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Cashmere, silk, leather bags</td><td><div class="bt-aff"><div class="bt-dot none"></div>Partnership target</div></td><td style="font-size:12px;color:var(--muted)">$75+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Everlane</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Organic cotton basics, denim</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$75+</td></tr>
+          <tr class="bt-row"><td class="bt-name">COS</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Architectural tailoring, knitwear</td><td><div class="bt-aff"><div class="bt-dot limited"></div>Limited (Awin)</div></td><td style="font-size:12px;color:var(--muted)">$75+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Zara</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Outerwear, one accent piece</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$50+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Mango</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Coats, tailored trousers, denim</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$50+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Aritzia</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Super Puff, Effortless Pant</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">Free w/ account</td></tr>
+          <tr class="bt-row"><td class="bt-name">Reformation</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Denim, linen, occasion dresses</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$100+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Sézane</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">French classics, knitwear, leather</td><td><div class="bt-aff"><div class="bt-dot none"></div>Partnership target</div></td><td style="font-size:12px;color:var(--muted)">$200+</td></tr>
+          <tr class="bt-row"><td class="bt-name">J.Crew</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Rollneck, Pixie Pant, blazers</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$75+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Abercrombie & Fitch</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Denim (esp. Curve Love), outerwear</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">Always free</td></tr>
+          <tr class="bt-row"><td class="bt-name">Anthropologie</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Maeve dresses, Pilcro denim</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$50+</td></tr>
+          <tr class="bt-row"><td class="bt-name">LOFT</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Workwear trousers, blouses</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$75+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Universal Standard</td><td><span class="bt-tier mid">Mid-range</span></td><td style="font-size:12px;color:var(--muted)">Sizes 00–40, Foundation Tee, Seine Jean</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active (up to 15%)</div></td><td style="font-size:12px;color:var(--muted)">Always free</td></tr>
+          <tr class="bt-row"><td class="bt-name">Cuyana</td><td><span class="bt-tier prem">Premium</span></td><td style="font-size:12px;color:var(--muted)">Investment leather bags, cashmere</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active</div></td><td style="font-size:12px;color:var(--muted)">$95+</td></tr>
+          <tr class="bt-row"><td class="bt-name">J.Crew Factory</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Budget alternative to J.Crew mainline</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active (shared)</div></td><td style="font-size:12px;color:var(--muted)">$75+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Gap Factory</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Budget alternative to Gap mainline</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active (shared)</div></td><td style="font-size:12px;color:var(--muted)">$50+</td></tr>
+          <tr class="bt-row"><td class="bt-name">Banana Republic Factory</td><td><span class="bt-tier acc">Accessible</span></td><td style="font-size:12px;color:var(--muted)">Budget alternative to BR mainline</td><td><div class="bt-aff"><div class="bt-dot active"></div>Active (shared)</div></td><td style="font-size:12px;color:var(--muted)">$50+</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="brands-philosophy">
+    <div class="bphil-inner">
+      <div class="bphil-q">"We only add a brand to the database after we understand exactly what it does well and what to avoid — not just the marketing."</div>
+      <p class="bphil-body">Every brand entry includes hero pieces, what to skip, a sizing matrix across petite, tall, plus, and curvy, cross-brand pairing logic, and a free shipping strategy. We treat brand knowledge the way we treat capsule curation — with specificity, not generality.</p>
+      <div style="margin-top:24px">
+        <a class="btn-ghost" href="quiz.html" style="border-color:var(--linen);color:var(--ink)">Tell us your brands →</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     ABOUT PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-about">
+  <section class="about-hero">
+    <div class="ph-inner">
+      <div class="ph-eyebrow" style="color:var(--cognac)">Our story</div>
+      <h1 class="ph-h1" style="color:var(--ink)">A cart I couldn't<br/><em>bring myself to check out.</em></h1>
+      <p class="ph-sub" style="color:var(--muted)">Capsule Club started with a $802.80 Quince cart and a question I couldn't answer: why does the same amount of money feel completely different at one store versus five?</p>
+    </div>
+  </section>
+
+  <section class="about-story">
+    <div class="as-inner">
+      <p class="story-p lead">I've been trying to build a capsule wardrobe for years. Last month I finally figured out why I kept failing — and it had nothing to do with discipline or taste.</p>
+      <p class="story-p">It started with Quince. Clean basics, luxury-adjacent fabrics, prices that feel almost suspiciously reasonable. My coworkers were wearing it. My algorithm was full of it. I genuinely liked the aesthetic. So one evening I opened the site with real intention.</p>
+      <p class="story-p">Thirteen items. $802.80. Free shipping, at least. I looked at that number for a long time. And I closed the tab.</p>
+      <div class="story-callout">
+        <div class="sc-quote">"$800 at one brand felt like a catalogue. The same $800 across four brands felt like a wardrobe."</div>
+        <div class="sc-attr">Stephanie · Founder</div>
+      </div>
+      <p class="story-p">That distinction sounds small. It isn't. It's why I'd been abandoning carts for years without ever understanding why. Every capsule wardrobe guide told me to commit to one brand — "shop your whole wardrobe from Everlane," "build it all from COS." Clean, simple, coherent. The problem is that nobody actually shops that way.</p>
+      <p class="story-p">We have our Madewell jeans and our Uniqlo basics and that one COS blazer we saved up for and the Quince cashmere we impulse-bought. We're already multi-brand people. The advice was asking us to be someone we're not.</p>
+      <p class="story-p">What I actually needed was someone to take the brands I already love and show me how to build something that works across all of them. A capsule from my brands, not their brands. That's why I built Capsule Club.</p>
+    </div>
+  </section>
+
+  <section class="about-values">
+    <div class="av-inner">
+      <div class="section-header" style="text-align:left">
+        <div class="sh-eyebrow">What we believe</div>
+        <h2 class="sh-h2">Three things we'll<br/><em>never compromise on.</em></h2>
+      </div>
+      <div class="values-grid">
+        <div class="val-card">
+          <div class="vc-num">01</div>
+          <div class="vc-title">Your brands, not ours</div>
+          <div class="vc-body">We never recommend a brand you didn't select. If your chosen brands can't fill a slot well, we tell you honestly rather than suggesting a substitution. This is your capsule, built from your taste.</div>
+        </div>
+        <div class="val-card">
+          <div class="vc-num">02</div>
+          <div class="vc-title">Quality over commission</div>
+          <div class="vc-body">We earn affiliate commissions when you buy through our links. When two options are genuinely equal, we prefer the affiliate brand. But we will never recommend an inferior piece to earn a commission. Member trust is the whole business.</div>
+        </div>
+        <div class="val-card">
+          <div class="vc-num">03</div>
+          <div class="vc-title">Specificity, always</div>
+          <div class="vc-body">We name specific products — never "a white tee from Gap" but "the VintageSoft Tee in White, size S, $34.95." Vague recommendations are useless. We do the research so you don't have to.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="about-founder">
+    <div class="af-inner">
+      <div class="af-avatar"><div class="af-initials">S.</div></div>
+      <div class="af-content">
+        <div class="af-eyebrow">The founder</div>
+        <div class="af-name">Stephanie</div>
+        <div class="af-title">Founder & Head Curator · @capsuleclub</div>
+        <p class="af-bio">I built Capsule Club because I couldn't find a wardrobe service that worked with how I actually shop. I'm a multi-brand shopper — Madewell denim, Uniqlo knitwear, the occasional COS investment piece, Quince for the expensive-feeling basics that aren't. I wanted someone to help me make those brands work together, not tell me to start over with one. So I built it myself.</p>
+        <p class="af-bio" style="margin-top:16px">Every capsule that goes out is reviewed by me before delivery. At this stage, that's a feature.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     FAQ PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-faq">
+  <section class="faq-hero" style="padding-bottom:40px">
+    <div class="ph-inner" style="color:var(--ink)">
+      <div class="ph-eyebrow" style="color:var(--cognac)">FAQ</div>
+      <h1 class="ph-h1" style="color:var(--ink)">Everything you<br/><em>want to know.</em></h1>
+    </div>
+  </section>
+
+  <section class="faq-content">
+    <div class="faq-content-inner">
+      <h3 class="faq-section-title">About the service</h3>
+      <div class="faq-section-sub">What Capsule Club is and how it works.</div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What exactly is Capsule Club? <span class="faq-toggle">+</span></div><div class="faq-a">Capsule Club is a wardrobe curation service that builds personalised capsule wardrobes from the brands you already love. You tell us up to five brands, we build your capsule — piece by piece, with specific product names, outfit combinations, sizing guidance, and direct links to buy. You choose your zone (Everyday, Work, or Weekend & Social) and we curate around that.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How is this different from a personal stylist? <span class="faq-toggle">+</span></div><div class="faq-a">Personal stylists typically introduce you to new brands and curate from the whole market. We do the opposite — we work exclusively from the brands you already chose. We also document everything: specific products, sizing notes, alternatives, free shipping strategies. A stylist gives you outfits; we give you a system.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How long does it take to receive my capsule? <span class="faq-toggle">+</span></div><div class="faq-a">The Club members receive their capsule within 48 hours of completing the style quiz. Club+ members receive theirs within 24 hours. If we have any questions about your quiz answers, we'll reach out before building rather than guess.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What if my brands don't have great options for a slot? <span class="faq-toggle">+</span></div><div class="faq-a">We tell you honestly. If a slot can't be strongly filled from your selected brands, we'll note it as a gap, explain why, and recommend the best available option with a flag that it's not the ideal pick. We never pad a capsule with mediocre recommendations.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Can I request changes to my capsule? <span class="faq-toggle">+</span></div><div class="faq-a">Club members can request one round of revisions per capsule. Club+ members have unlimited revisions until they're happy with every slot. Just reply to the delivery email with your feedback.</div></div>
+
+      <h3 class="faq-section-title">The brands</h3>
+      <div class="faq-section-sub">Questions about the brand database.</div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What brands do you support? <span class="faq-toggle">+</span></div><div class="faq-a">We currently support 21 brands including Madewell, Uniqlo, Banana Republic, Gap, Quince, Everlane, COS, Zara, Mango, Aritzia, Reformation, Sézane, J.Crew, Abercrombie & Fitch, Anthropologie, LOFT, Universal Standard, Cuyana, and the factory lines for Gap, Banana Republic, and J.Crew. We add new brands regularly — see The Brands page for the full list.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What if my favourite brand isn't on the list? <span class="faq-toggle">+</span></div><div class="faq-a">Tell us in your quiz under "anything else we should know." If a brand appears in enough member requests, we'll research and add it. We'd rather add the right brands well than rush to cover everything.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Do you have a bias toward certain brands? <span class="faq-toggle">+</span></div><div class="faq-a">We earn affiliate commissions on some brands and not others. Our rule (Rule 11 in our curation logic): when two options are genuinely equal, we prefer the affiliate brand. We never recommend an inferior piece to earn a commission. Non-affiliate brands like Quince and Sézane appear in capsules whenever they're the right choice — period.</div></div>
+
+      <h3 class="faq-section-title">Sizing and fit</h3>
+      <div class="faq-section-sub">How we handle sizing across different brands.</div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">How do you handle sizing differences between brands? <span class="faq-toggle">+</span></div><div class="faq-a">Every brand in our database has been researched for sizing quirks — Uniqlo runs small, COS runs large, Sézane uses French sizing, Reformation runs small in the bust. Your capsule includes specific sizing notes per brand, not just a generic size. We tell you exactly what to order.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Do you support petite, tall, and plus sizes? <span class="faq-toggle">+</span></div><div class="faq-a">Yes. Our quiz includes dedicated fit questions covering silhouette preferences, proportion notes, and size range. Every brand entry in our database includes a sizing matrix across petite, tall, plus, and curvy. We'll flag brands that don't serve your size range well and suggest alternatives from your list.</div></div>
+
+      <h3 class="faq-section-title">Billing and membership</h3>
+      <div class="faq-section-sub">Subscriptions, pausing, and everything money-related.</div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Can I pause instead of cancel? <span class="faq-toggle">+</span></div><div class="faq-a">Yes — always. You can pause your membership for up to three months and resume whenever you're ready. Your preferences, brands, and saved capsules are preserved during a pause. We'd rather you pause than cancel and lose everything we've built together.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">Do I have to spend money on clothes to use Capsule Club? <span class="faq-toggle">+</span></div><div class="faq-a">No. Your capsule is a recommendation, not an order. We note what you already own so we never pressure you to replace something that's working. Buy what makes sense when it makes sense.</div></div>
+      <div class="faq-item" onclick="toggleFaq(this)"><div class="faq-q">What's the affiliate disclosure? <span class="faq-toggle">+</span></div><div class="faq-a">Some brands in our database have affiliate programmes that pay us a small commission when you buy through our links. This is one of two revenue streams alongside your subscription fee. The commission comes from the brand, never from you — the price you pay is always the same as going directly to the brand. Your capsule is never influenced by which brands pay us.</div></div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     BLOG / JOURNAL PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-blog">
+  <section class="blog-hero">
+    <div class="ph-inner" style="color:var(--ink)">
+      <div class="ph-eyebrow" style="color:var(--cognac)">The Capsule Club Journal</div>
+      <h1 class="ph-h1" style="color:var(--ink)">Wardrobe thinking.<br/><em>Honest brand notes.</em></h1>
+      <p class="ph-sub" style="color:var(--muted)">Essays on building a wardrobe that actually works. Brand deep dives. The occasional honest opinion about why most capsule wardrobe advice is broken.</p>
+    </div>
+  </section>
+
+  <section class="blog-grid">
+    <div class="blog-inner">
+      <div class="blog-posts">
+        <div class="post-featured" onclick="showPage('blog')">
+          <div class="pf-issue">Issue No. 001 · April 2026</div>
+          <h2 class="pf-title">I had $802 in my cart.<br/><em>I didn't check out.</em></h2>
+          <p class="pf-excerpt">The founding story of Capsule Club — and the realisation that nobody fails at capsule wardrobes because of discipline. They fail because the advice asks you to be someone you're not.</p>
+          <div class="pf-meta">By Stephanie · 4 min read</div>
+          <a class="pf-link">Read the issue →</a>
+        </div>
+        <div class="blog-sidebar">
+          <div class="post-small">
+            <div class="ps-issue">Coming soon · Issue No. 002</div>
+            <div class="ps-title">The Uniqlo sizing problem nobody talks about.</div>
+            <div class="ps-meta" style="margin-top:8px;font-size:11px;color:var(--muted)">Uniqlo runs a full size small. Here's what that means for your capsule.</div>
+          </div>
+          <div class="post-small">
+            <div class="ps-issue">Coming soon · Issue No. 003</div>
+            <div class="ps-title">Why "invest in fewer, better pieces" is bad advice.</div>
+            <div class="ps-meta" style="margin-top:8px;font-size:11px;color:var(--muted)">The problem with slow fashion advice aimed at people who can't afford it.</div>
+          </div>
+          <div class="ps-coming">
+            <div class="psc-label">Subscriber exclusive</div>
+            <div class="psc-title">Members receive new issues in their inbox first.</div>
+            <div style="margin-top:16px">
+              <a class="btn-primary" href="quiz.html" style="font-size:9px;padding:10px 20px">Join to get early access</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="newsletter-strip">
+        <div class="ns-text">
+          <div class="ns-label">The Capsule Club Journal</div>
+          <div class="ns-title">New issues every two weeks.</div>
+        </div>
+        <div class="ns-form">
+          <input class="ns-input" type="email" placeholder="Your email address" />
+          <button class="ns-btn" onclick="window.location='mailto:hello@joincapsuleclub.com?subject=Newsletter signup'">Subscribe →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     CONTACT PAGE
+═══════════════════════════════════════════ -->
+<div class="page" id="page-contact">
+  <section class="contact-hero" style="padding-bottom:40px">
+    <div class="ph-inner" style="color:var(--ink)">
+      <div class="ph-eyebrow" style="color:var(--cognac)">Get in touch</div>
+      <h1 class="ph-h1" style="color:var(--ink)">We're a small team.<br/><em>We read everything.</em></h1>
+      <p class="ph-sub" style="color:var(--muted)">A question about your capsule, a brand suggestion, or just wanting to say hello — send it through.</p>
+    </div>
+  </section>
+
+  <section class="contact-content">
+    <div class="cc-inner">
+      <div class="cc-form">
+        <div class="form-group">
+          <label class="form-label">Your name</label>
+          <input class="form-input" type="text" placeholder="First name is fine" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">Email address</label>
+          <input class="form-input" type="email" placeholder="hello@example.com" />
+        </div>
+        <div class="form-group">
+          <label class="form-label">What's this about?</label>
+          <select class="form-select">
+            <option value="">Select a topic</option>
+            <option>My capsule — a question or revision</option>
+            <option>Brand suggestion</option>
+            <option>Membership or billing</option>
+            <option>Press or collaboration</option>
+            <option>Just saying hello</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Message</label>
+          <textarea class="form-textarea" placeholder="Tell us what's on your mind..."></textarea>
+        </div>
+        <button class="form-btn" onclick="window.location='mailto:hello@joincapsuleclub.com?subject=Message from joincapsuleclub.com'">Send message →</button>
+      </div>
+      <div class="cc-info">
+        <div class="ci-title">Other ways to reach us</div>
+        <p class="ci-body">We're a small operation — Stephanie reads and responds to every message personally. Typical response time is one business day.</p>
+        <div class="contact-item">
+          <div class="contact-icon">@</div>
+          <div class="contact-text">
+            <div class="contact-label">Email</div>
+            <div class="contact-value">hello@joincapsuleclub.com</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">↗</div>
+          <div class="contact-text">
+            <div class="contact-label">Instagram</div>
+            <div class="contact-value">@capsuleclub</div>
+          </div>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">✉</div>
+          <div class="contact-text">
+            <div class="contact-label">Newsletter</div>
+            <div class="contact-value">The Capsule Club Journal</div>
+          </div>
+        </div>
+        <div style="margin-top:40px;padding:24px;background:var(--cream-mid)">
+          <div style="font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--cognac);margin-bottom:8px">Member support</div>
+          <p style="font-size:13px;color:var(--muted);line-height:1.7">If you're a current member with a question about your capsule, the fastest way to reach us is by replying directly to your capsule delivery email. That keeps everything in one thread.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FOOTER (shown on all pages) -->
+<footer id="siteFooter">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <div class="fb-logo"><em>Capsule</em> Club</div>
+        <p class="fb-tagline">Build your capsule. Shop your brands.</p>
+        <div class="fb-social">
+          <a class="fb-soc-link" href="https://instagram.com/capsuleclub" target="_blank" aria-label="Instagram">IG</a>
+          <a class="fb-soc-link" href="#" aria-label="Substack">SS</a>
+          <a class="fb-soc-link" href="#" aria-label="Pinterest">PT</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="fc-title">Explore</div>
+        <div class="fc-links">
+          <a class="fc-link" onclick="showPage('how')">How It Works</a>
+          <a class="fc-link" onclick="showPage('pricing')">Pricing</a>
+          <a class="fc-link" onclick="showPage('brands')">The Brands</a>
+          <a class="fc-link" onclick="showPage('blog')">Journal</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="fc-title">Company</div>
+        <div class="fc-links">
+          <a class="fc-link" onclick="showPage('about')">About</a>
+          <a class="fc-link" onclick="showPage('faq')">FAQ</a>
+          <a class="fc-link" onclick="showPage('contact')">Contact</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <div class="fc-title">Join</div>
+        <div class="fc-links">
+          <a class="fc-link" href="quiz.html">The Club — $12 / mo</a>
+          <a class="fc-link" href="quiz.html">The Club+ — $22 / mo</a>
+        </div>
+        <div style="margin-top:20px">
+          <a class="nav-cta" href="quiz.html" style="font-size:9px;padding:10px 18px">Get Started →</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="fb-copy">© 2026 Capsule Club · joincapsuleclub.com</div>
+      <div class="fb-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Affiliate Disclosure</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// ── CURSOR ────────────────────────────────────
+const cur = document.getElementById('cur');
+const curR = document.getElementById('curR');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.transform=`translate(${mx}px,${my}px) translate(-50%,-50%)`;});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;curR.style.transform=`translate(${rx}px,${ry}px) translate(-50%,-50%)`;requestAnimationFrame(animRing);}
+animRing();
+document.querySelectorAll('a,button,[onclick]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur.classList.add('big');curR.classList.add('big')});
+  el.addEventListener('mouseleave',()=>{cur.classList.remove('big');curR.classList.remove('big')});
+});
+
+// ── NAV SCROLL ────────────────────────────────
+window.addEventListener('scroll',()=>{
+  document.getElementById('mainNav').classList.toggle('scrolled',window.scrollY>40);
+});
+
+// ── PAGE ROUTING ──────────────────────────────
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const pg = document.getElementById('page-'+id);
+  if(pg){pg.classList.add('active');}
+  window.scrollTo({top:0,behavior:'instant'});
+  // update nav active states
+  document.querySelectorAll('.mob-link').forEach(l=>{l.classList.remove('active')});
+}
+// show home by default
+showPage('home');
+
+// ── MOBILE MENU ───────────────────────────────
+function toggleMob(){
+  const m = document.getElementById('mobMenu');
+  m.classList.toggle('open');
+}
+
+// ── FAQ TOGGLE ────────────────────────────────
+function toggleFaq(el){
+  el.classList.toggle('open');
+}
+
+// ── INTERSECTION OBSERVER — fade in ──────────
+const io = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting){e.target.style.opacity='1';e.target.style.transform='translateY(0)';}});
+},{threshold:.08});
+document.querySelectorAll('.how-step,.zone-card,.val-card,.ze-card,.plan-card,.hiw-step-full').forEach(el=>{
+  el.style.opacity='0';el.style.transform='translateY(24px)';el.style.transition='opacity .6s ease, transform .6s ease';
+  io.observe(el);
+});
+
+// ── TICKER PAUSE ON HOVER ─────────────────────
+const track = document.getElementById('t1');
+if(track){
+  track.parentElement.addEventListener('mouseenter',()=>track.style.animationPlayState='paused');
+  track.parentElement.addEventListener('mouseleave',()=>track.style.animationPlayState='running');
+}
+</script>
+</body>
+</html>
