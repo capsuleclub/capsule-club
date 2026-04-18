@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capsule Club &mdash; Style Quiz v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--cream:#F5F1E9;--ink:#1A1A16;--cognac:#8B6B42;--linen:#C9BFA9;--muted:#7A7468;--soft:#E6DFD1}
+body{background:var(--ink);color:var(--cream);font-family:'DM Sans',sans-serif;font-weight:300;min-height:100vh;overflow-x:hidden}
+.progress-bar{position:fixed;top:0;left:0;right:0;height:2px;background:rgba(255,255,255,.08);z-index:100}
+.progress-fill{height:100%;background:var(--cognac);transition:width .5s ease}
+.progress-label{position:fixed;top:16px;right:24px;font-size:10px;letter-spacing:.25em;color:var(--muted);z-index:100}
+.logo-fixed{position:fixed;top:12px;left:24px;font-family:'Playfair Display',serif;font-size:16px;color:var(--cream);z-index:100;opacity:.6}
+.screen{display:none;min-height:100vh;align-items:center;justify-content:center;padding:80px 24px 40px;animation:fadeUp .5s ease both}
+.screen.active{display:flex}
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.screen-inner{width:100%;max-width:580px}
+.q-num{font-size:9px;letter-spacing:.4em;color:var(--cognac);text-transform:uppercase;margin-bottom:16px}
+.q-title{font-family:'Playfair Display',serif;font-size:clamp(26px,4vw,38px);font-weight:400;line-height:1.1;color:var(--cream);margin-bottom:10px}
+.q-title em{font-style:italic;color:var(--cognac)}
+.q-sub{font-size:13px;color:var(--muted);line-height:1.65;margin-bottom:32px}
+.fit-tag{display:inline-block;font-size:8px;letter-spacing:.3em;color:var(--cognac);background:rgba(139,107,66,.15);padding:4px 10px;margin-bottom:16px;text-transform:uppercase}
+.fit-note{background:rgba(139,107,66,.08);border-left:2px solid var(--cognac);padding:12px 16px;margin-bottom:24px;font-size:12px;color:var(--muted);line-height:1.65;font-style:italic;font-family:'Playfair Display',serif}
+.text-input{width:100%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);padding:16px 18px;font-size:15px;color:var(--cream);font-family:'DM Sans',sans-serif;outline:none;transition:border-color .2s;margin-bottom:8px}
+.text-input::placeholder{color:var(--muted)}
+.text-input:focus{border-color:var(--cognac)}
+.options{display:flex;flex-direction:column;gap:8px;margin-bottom:8px}
+.options.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.opt{padding:14px 18px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s;display:flex;align-items:flex-start;gap:12px}
+.opt:hover{border-color:rgba(255,255,255,.25);background:rgba(255,255,255,.06)}
+.opt.selected{border-color:var(--cognac);background:rgba(139,107,66,.12)}
+.opt.selected .chk{background:var(--cognac);border-color:var(--cognac);color:#fff}
+.chk{width:20px;height:20px;border-radius:50%;border:1px solid rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:9px;flex-shrink:0;margin-top:1px;transition:all .2s}
+.ob{flex:1}
+.ol{font-size:13px;color:var(--cream);line-height:1.3;margin-bottom:2px}
+.od{font-size:11px;color:var(--muted);line-height:1.5}
+.brand-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+.br{padding:12px 10px;text-align:center;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;transition:all .2s}
+.br:hover{border-color:rgba(255,255,255,.25)}
+.br.selected{border-color:var(--cognac);background:rgba(139,107,66,.12)}
+.br-name{font-size:12px;color:var(--cream)}
+.br-tier{font-size:9px;color:var(--muted);letter-spacing:.1em;margin-top:2px}
+.brand-limit{font-size:11px;color:var(--muted);margin-bottom:16px;font-style:italic;font-family:'Playfair Display',serif}
+.wg{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+.wc{padding:8px 16px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.03);cursor:pointer;font-size:12px;color:var(--cream);transition:all .2s;letter-spacing:.05em}
+.wc:hover{border-color:rgba(255,255,255,.25)}
+.wc.selected{border-color:var(--cognac);background:rgba(139,107,66,.12);color:var(--cognac)}
+.nav{display:flex;align-items:center;justify-content:space-between;margin-top:24px}
+.nav-back{font-size:11px;letter-spacing:.15em;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .2s;padding:0}
+.nav-back:hover{color:var(--cream)}
+.nav-next{padding:13px 32px;background:var(--cognac);color:var(--cream);border:none;font-size:10px;letter-spacing:.2em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.nav-next:hover{background:#6B4E2A}
+.nav-next:disabled{background:rgba(255,255,255,.1);color:var(--muted);cursor:not-allowed}
+.nav-skip{font-size:11px;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;letter-spacing:.1em;transition:color .2s}
+.nav-skip:hover{color:var(--cream)}
+.hint{font-size:11px;color:var(--muted);margin-top:8px;min-height:16px;font-style:italic;font-family:'Playfair Display',serif}
+.welcome-screen{text-align:center;display:flex;flex-direction:column;align-items:center}
+.wl-logo{font-family:'Playfair Display',serif;font-size:28px;color:var(--cream);margin-bottom:8px}
+.wl-tag{font-size:10px;letter-spacing:.3em;color:var(--cognac);text-transform:uppercase;margin-bottom:48px}
+.wl-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,54px);font-weight:400;line-height:1.05;margin-bottom:20px}
+.wl-title em{font-style:italic;color:var(--cognac)}
+.wl-sub{font-size:15px;color:var(--muted);line-height:1.75;max-width:420px;margin-bottom:48px}
+.wl-stats{display:flex;gap:2px;margin-bottom:40px;width:100%;max-width:420px}
+.ws{flex:1;background:rgba(255,255,255,.04);padding:16px 12px;text-align:center}
+.ws-num{font-family:'Playfair Display',serif;font-size:24px;color:var(--cream);margin-bottom:4px}
+.ws-lbl{font-size:9px;letter-spacing:.15em;color:var(--muted);text-transform:uppercase;line-height:1.4}
+.start-btn{padding:16px 48px;background:var(--cognac);color:var(--cream);border:none;font-size:11px;letter-spacing:.25em;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s}
+.start-btn:hover{background:#6B4E2A}
+.wl-time{font-size:11px;color:var(--muted);margin-top:16px}
+.complete-screen{text-align:center;display:flex;flex-direction:column;align-items:center}
+.complete-icon{font-size:48px;margin-bottom:24px;opacity:.8}
+.complete-title{font-family:'Playfair Display',serif;font-size:40px;font-weight:400;margin-bottom:16px}
+.complete-title em{font-style:italic;color:var(--cognac)}
+.complete-sub{font-size:15px;color:var(--muted);line-height:1.75;max-width:400px;margin-bottom:40px}
+.complete-summary{background:rgba(255,255,255,.04);padding:24px 28px;width:100%;max-width:480px;margin-bottom:32px;text-align:left}
+.cs-sec{font-size:8px;letter-spacing:.3em;color:var(--cognac);text-transform:uppercase;padding:12px 0 6px;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:4px}
+.cs-row{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.05);font-size:12px;gap:16px}
+.cs-row:last-child{border-bottom:none}
+.cs-k{color:var(--muted);flex-shrink:0}
+.cs-v{color:var(--cream);text-align:right}
+.complete-btn{padding:16px 48px;background:var(--cognac);color:var(--cream);border:none;font-size:11px;letter-spacing:.25em;cursor:pointer;font-family:'DM Sans',sans-serif}
+@media(max-width:500px){.brand-grid{grid-template-columns:repeat(2,1fr)}.options.g2{grid-template-columns:1fr}}
+
+/* SUMMARY REVIEW SCREEN */
+.sum-screen { }
+.sum-zone-hero { background: var(--cognac); padding: 20px 24px; margin-bottom: 28px; display: flex; align-items: center; justify-content: space-between; }
+.szh-label { font-size: 9px; letter-spacing: .35em; text-transform: uppercase; color: rgba(245,241,233,.6); margin-bottom: 4px; }
+.szh-zone { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--cream); font-style: italic; }
+.szh-change { font-size: 10px; letter-spacing: .15em; text-transform: uppercase; color: rgba(245,241,233,.5); background: none; border: 1px solid rgba(245,241,233,.2); padding: 6px 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+.szh-change:hover { border-color: rgba(245,241,233,.5); color: var(--cream); }
+.sum-sections { display: flex; flex-direction: column; gap: 2px; margin-bottom: 24px; }
+.sum-section { background: rgba(255,255,255,.04); }
+.sum-sec-head { font-size: 9px; letter-spacing: .3em; text-transform: uppercase; color: var(--cognac); padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,.06); }
+.sum-rows { padding: 4px 0; }
+.sum-row { display: flex; align-items: baseline; gap: 12px; padding: 10px 16px; border-bottom: 1px solid rgba(255,255,255,.04); }
+.sum-row:last-child { border-bottom: none; }
+.sum-key { font-size: 11px; color: var(--muted); flex-shrink: 0; min-width: 100px; letter-spacing: .05em; }
+.sum-val { font-size: 13px; color: var(--cream); line-height: 1.5; }
+.sum-val.brands-val { display: flex; flex-wrap: wrap; gap: 4px; }
+.sum-brand-chip { font-size: 10px; letter-spacing: .1em; padding: 3px 10px; background: rgba(139,107,66,.2); color: var(--cognac); }
+.sum-edit-note { font-size: 11px; color: var(--muted); font-style: italic; font-family: 'Playfair Display', serif; text-align: center; margin-bottom: 20px; }
+.sum-submit { width: 100%; padding: 16px; background: var(--cognac); color: var(--cream); border: none; font-size: 11px; letter-spacing: .25em; text-transform: uppercase; font-family: 'DM Sans', sans-serif; transition: background .2s; }
+.sum-submit:hover { background: #6B4E2A; }
+</style>
+</head>
+<body>
+<div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
+<div class="progress-label" id="pl"></div>
+<div class="logo-fixed">Capsule Club</div>
+
+<div class="screen active" id="s0">
+  <div class="screen-inner welcome-screen">
+    <div class="wl-logo">Capsule Club</div>
+    <div class="wl-tag">Build your capsule. Shop your brands.</div>
+    <h1 class="wl-title">Your wardrobe,<br/><em>finally working.</em></h1>
+    <p class="wl-sub">Tell us your style, your brands, and how you like to dress. We'll build you a complete capsule wardrobe &mdash; sourced only from the brands you already love, tailored to how you actually wear clothes.</p>
+    <div class="wl-stats">
+      <div class="ws"><div class="ws-num">5</div><div class="ws-lbl">Your brands only</div></div>
+      <div class="ws"><div class="ws-num">14</div><div class="ws-lbl">Questions</div></div>
+      <div class="ws"><div class="ws-num">48hr</div><div class="ws-lbl">Capsule delivery</div></div>
+    </div>
+    <button class="start-btn" onclick="go(1)">BEGIN MY STYLE PROFILE &rarr;</button>
+    <div class="wl-time">About 7 minutes &middot; No account needed</div>
+  </div>
+</div>
+
+<div class="screen" id="s1">
+  <div class="screen-inner">
+    <div class="q-num">01 of 14</div>
+    <h2 class="q-title">Let's start with<br/><em>the basics.</em></h2>
+    <p class="q-sub">We'll use your name to personalise your capsule and your email to deliver it.</p>
+    <input class="text-input" type="text" id="q1n" placeholder="Your first name" oninput="chk1()"/>
+    <input class="text-input" type="email" id="q1e" placeholder="Your email address" oninput="chk1()" style="margin-top:8px"/>
+    <div class="hint" id="h1"></div>
+    <div class="nav"><span></span><button class="nav-next" id="n1" disabled onclick="go(2)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s2">
+  <div class="screen-inner">
+    <div class="q-num">02 of 14</div>
+    <h2 class="q-title">What's your<br/><em>budget per piece?</em></h2>
+    <p class="q-sub">Not your total &mdash; just per item. This helps us match the right brands and flag best-value picks within each.</p>
+    <div class="options" id="o2">
+      <div class="opt" onclick="ss('q2','u75',this)"><div class="chk"></div><div class="ob"><div class="ol">Under $75</div><div class="od">Uniqlo, Gap, Quince, Zara &mdash; excellent quality at accessible prices</div></div></div>
+      <div class="opt" onclick="ss('q2','75150',this)"><div class="chk"></div><div class="ob"><div class="ol">$75 &ndash; $150</div><div class="od">Madewell, Everlane, Banana Republic, COS &mdash; the sweet spot for lasting basics</div></div></div>
+      <div class="opt" onclick="ss('q2','150300',this)"><div class="chk"></div><div class="ob"><div class="ol">$150 &ndash; $300</div><div class="od">Reformation, Aritzia, Reiss, & Other Stories &mdash; considered investment pieces</div></div></div>
+      <div class="opt" onclick="ss('q2','300p',this)"><div class="chk"></div><div class="ob"><div class="ol">$300+</div><div class="od">Theory, Toteme, Vince, Frame &mdash; premium quality built to last years</div></div></div>
+    </div>
+    <div class="nav"><button class="nav-back" onclick="go(1)">← BACK</button><button class="nav-next" id="n2" disabled onclick="go(3)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s3">
+  <div class="screen-inner">
+    <div class="q-num">03 of 14</div>
+    <h2 class="q-title">Which brands<br/><em>feel like you?</em></h2>
+    <p class="q-sub">Pick up to 5. We'll only source your capsule from these brands &mdash; no surprises.</p>
+    <div class="brand-limit" id="blim">Select up to 5 brands</div>
+    <div class="brand-grid" id="brg"></div>
+    <div class="hint" id="h3"></div>
+    <div class="nav"><button class="nav-back" onclick="go(2)">← BACK</button><button class="nav-next" id="n3" disabled onclick="go(4)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s4">
+  <div class="screen-inner">
+    <div class="q-num">04 of 14</div>
+    <div class="fit-tag">Fit Preference</div>
+    <h2 class="q-title">How do you like<br/><em>your clothes to feel?</em></h2>
+    <p class="q-sub">When you're wearing something you love, it usually feels...</p>
+    <div class="fit-note">"This tells us which cut to recommend within each brand. The same capsule style reads very differently depending on whether you prefer a baggy straight jean or a slim fit."</div>
+    <div class="options" id="o4">
+      <div class="opt" onclick="ss('q4','relaxed',this)"><div class="chk"></div><div class="ob"><div class="ol">Relaxed and easy</div><div class="od">Nothing too fitted or structured &mdash; I want to move freely and not think about it</div></div></div>
+      <div class="opt" onclick="ss('q4','mixed',this)"><div class="chk"></div><div class="ob"><div class="ol">A considered mix</div><div class="od">Fitted somewhere, relaxed somewhere &mdash; I like intentional contrast in a look</div></div></div>
+      <div class="opt" onclick="ss('q4','tailored',this)"><div class="chk"></div><div class="ob"><div class="ol">Tailored and defined</div><div class="od">I like clothes that follow my shape &mdash; structured, polished, put-together</div></div></div>
+      <div class="opt" onclick="ss('q4','contextual',this)"><div class="chk"></div><div class="ob"><div class="ol">Depends on the occasion</div><div class="od">Relaxed on weekends, more structured for work &mdash; I dress for context</div></div></div>
+    </div>
+    <div class="nav"><button class="nav-back" onclick="go(3)">← BACK</button><button class="nav-next" id="n4" disabled onclick="go(5)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s5">
+  <div class="screen-inner">
+    <div class="q-num">05 of 14</div>
+    <div class="fit-tag">Fit Preference</div>
+    <h2 class="q-title">Any proportions<br/><em>we should know?</em></h2>
+    <p class="q-sub">This helps us flag which brands and cuts work for your frame &mdash; and steer you away from ones that won't.</p>
+    <div class="fit-note">"Not all brands serve all proportions equally. Madewell has a great petite range. COS cuts run long. Knowing this changes what we recommend."</div>
+    <div class="options" id="o5">
+      <div class="opt" onclick="ss('q5','petite',this)"><div class="chk"></div><div class="ob"><div class="ol">Petite &mdash; under 5'4"</div><div class="od">Length and proportion matter a lot &mdash; I need pieces cut for a shorter frame</div></div></div>
+      <div class="opt" onclick="ss('q5','tall',this)"><div class="chk"></div><div class="ob"><div class="ol">Tall &mdash; 5'9" and above</div><div class="od">Standard lengths are often too short &mdash; I need extra length in sleeves, inseams, and hems</div></div></div>
+      <div class="opt" onclick="ss('q5','curvy',this)"><div class="chk"></div><div class="ob"><div class="ol">Significant size difference between top and bottom</div><div class="od">Standard cuts often gap, pull, or don't fit both at once</div></div></div>
+      <div class="opt" onclick="ss('q5','standard',this)"><div class="chk"></div><div class="ob"><div class="ol">Standard proportions</div><div class="od">Nothing specific to flag &mdash; most cuts work reasonably well for me</div></div></div>
+      <div class="opt" onclick="ss('q5','multiple',this)"><div class="chk"></div><div class="ob"><div class="ol">Multiple apply &mdash; it's complicated</div><div class="od">I'll add details in the fit notes at the end</div></div></div>
+    </div>
+    <div class="nav"><button class="nav-back" onclick="go(4)">← BACK</button><button class="nav-next" id="n5" disabled onclick="go(6)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s6">
+  <div class="screen-inner">
+    <div class="q-num">06 of 14</div>
+    <div class="fit-tag">Fit Preference</div>
+    <h2 class="q-title">What size range<br/><em>do you typically shop?</em></h2>
+    <p class="q-sub">We'll never recommend a piece from a brand that doesn't reliably carry your size.</p>
+    <div class="options g2" id="o6">
+      <div class="opt" onclick="ss('q6','xss',this)"><div class="chk"></div><div class="ob"><div class="ol">XS &ndash; S</div><div class="od">US 0 &ndash; 6</div></div></div>
+      <div class="opt" onclick="ss('q6','sm',this)"><div class="chk"></div><div class="ob"><div class="ol">S &ndash; M</div><div class="od">US 4 &ndash; 10</div></div></div>
+      <div class="opt" onclick="ss('q6','ml',this)"><div class="chk"></div><div class="ob"><div class="ol">M &ndash; L</div><div class="od">US 8 &ndash; 14</div></div></div>
+      <div class="opt" onclick="ss('q6','lxl',this)"><div class="chk"></div><div class="ob"><div class="ol">L &ndash; XL</div><div class="od">US 12 &ndash; 18</div></div></div>
+      <div class="opt" onclick="ss('q6','1x3x',this)"><div class="chk"></div><div class="ob"><div class="ol">1X &ndash; 3X</div><div class="od">US 18 &ndash; 26</div></div></div>
+      <div class="opt" onclick="ss('q6','3xp',this)"><div class="chk"></div><div class="ob"><div class="ol">3X+</div><div class="od">Extended sizes</div></div></div>
+    </div>
+    <div class="hint">Varies by brand? Pick your most common &mdash; add details in the fit notes.</div>
+    <div class="nav"><button class="nav-back" onclick="go(5)">← BACK</button><button class="nav-next" id="n6" disabled onclick="go(7)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s7">
+  <div class="screen-inner">
+    <div class="q-num">07 of 14</div>
+    <h2 class="q-title">Which style<br/><em>feels most like you?</em></h2>
+    <p class="q-sub">This shapes your entire capsule &mdash; the colours, the silhouettes, the pieces we prioritise.</p>
+    <div class="options" id="o7">
+      <div class="opt" onclick="ss('q7','classic',this)"><div class="chk"></div><div class="ob"><div class="ol">Classic Minimalist</div><div class="od">White, cream, black, camel &mdash; clean pieces that work forever</div></div></div>
+      <div class="opt" onclick="ss('q7','parisian',this)"><div class="chk"></div><div class="ob"><div class="ol">Parisian Chic</div><div class="od">Effortful-looking but effortless &mdash; Breton stripes, relaxed tailoring, silk</div></div></div>
+      <div class="opt" onclick="ss('q7','workwear',this)"><div class="chk"></div><div class="ob"><div class="ol">Modern Workwear</div><div class="od">Polished without being stiff &mdash; pieces that work from desk to dinner</div></div></div>
+      <div class="opt" onclick="ss('q7','quiet',this)"><div class="chk"></div><div class="ob"><div class="ol">Quiet Luxury</div><div class="od">Understated, quality-forward, no logos &mdash; expensive-looking without trying</div></div></div>
+      <div class="opt" onclick="ss('q7','coastal',this)"><div class="chk"></div><div class="ob"><div class="ol">Coastal Casual</div><div class="od">Linen, natural fabrics, easy movement &mdash; relaxed with intention</div></div></div>
+      <div class="opt" onclick="ss('q7','creative',this)"><div class="chk"></div><div class="ob"><div class="ol">Creative Professional</div><div class="od">Editorial but wearable &mdash; one bold piece, everything else considered</div></div></div>
+      <div class="opt" onclick="ss('q7','feminine',this)"><div class="chk"></div><div class="ob"><div class="ol">Soft Feminine</div><div class="od">Blush, sage, ivory &mdash; flowing fabrics and delicate details</div></div></div>
+      <div class="opt" onclick="ss('q7','weekend',this)"><div class="chk"></div><div class="ob"><div class="ol">Weekend Casual</div><div class="od">Denim, white tees, relaxed layers &mdash; intentionally casual</div></div></div>
+    </div>
+    <div class="nav"><button class="nav-back" onclick="go(6)">← BACK</button><button class="nav-next" id="n7" disabled onclick="go(8)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s8">
+  <div class="screen-inner">
+    <div class="q-num">08 of 14</div>
+    <h2 class="q-title">Pick three words that<br/><em>feel like your style.</em></h2>
+    <p class="q-sub">These fine-tune the capsule within your chosen style. Pick exactly three.</p>
+    <div class="wg" id="wg8"></div>
+    <div class="hint" id="h8">Select 3 words</div>
+    <div class="nav"><button class="nav-back" onclick="go(7)">← BACK</button><button class="nav-next" id="n8" disabled onclick="go(9)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s9">
+  <div class="screen-inner">
+    <div class="q-num">09 of 14</div>
+    <h2 class="q-title">What does your<br/><em>wardrobe need most?</em></h2>
+    <p class="q-sub">Your capsule will be built around this edit. You can always add another edit in a future capsule &mdash; your preferences will be saved.</p>
+    <div class="options" id="o9">
+      <div class="opt" onclick="ss('q9','everyday',this)"><div class="chk"></div><div class="ob"><div class="ol">Everyday</div><div class="od">The foundation &mdash; what you reach for daily without thinking. Errands, casual plans, working from home, weekends.</div></div></div>
+      <div class="opt" onclick="ss('q9','work',this)"><div class="chk"></div><div class="ob"><div class="ol">Work</div><div class="od">Desk to dinner. Professional pieces that cross from office to after-work without changing.</div></div></div>
+      <div class="opt" onclick="ss('q9','weekend',this)"><div class="chk"></div><div class="ob"><div class="ol">Weekend &amp; Social</div><div class="od">Smart casual, evenings out, dinners, travel. Casual elevated &mdash; looks great without overthinking.</div></div></div>
+    </div>
+    <div class="hint" id="h9" style="margin-top:8px;padding:12px 16px;background:rgba(139,107,66,.08);border-left:2px solid rgba(139,107,66,.3);font-family:'Playfair Display',serif;font-size:12px;color:var(--muted);display:none">Once your first capsule is delivered, you'll be able to add the next edit &mdash; your brands and preferences will carry over automatically.</div>
+    <div class="nav"><button class="nav-back" onclick="go(8)">← BACK</button><button class="nav-next" id="n9" disabled onclick="go(10)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s10">
+  <div class="screen-inner">
+    <div class="q-num">10 of 14</div>
+    <h2 class="q-title">What's your<br/><em>biggest wardrobe problem?</em></h2>
+    <p class="q-sub">Be honest &mdash; this is what your capsule needs to actually solve.</p>
+    <div class="options" id="o10">
+      <div class="opt" onclick="ss('q10','full',this)"><div class="chk"></div><div class="ob"><div class="ol">I have lots of clothes but nothing to wear</div><div class="od">Full wardrobe, zero outfits &mdash; nothing works together</div></div></div>
+      <div class="opt" onclick="ss('q10','rotation',this)"><div class="chk"></div><div class="ob"><div class="ol">I wear the same 5 things on rotation</div><div class="od">I ignore most of what I own and reach for the same pieces every day</div></div></div>
+      <div class="opt" onclick="ss('q10','orphans',this)"><div class="chk"></div><div class="ob"><div class="ol">I keep buying things that don't go with anything</div><div class="od">Good individual pieces that never become outfits</div></div></div>
+      <div class="opt" onclick="ss('q10','time',this)"><div class="chk"></div><div class="ob"><div class="ol">Getting dressed takes too long</div><div class="od">Too many decisions every morning &mdash; I want to open my wardrobe and just know</div></div></div>
+    </div>
+    <div class="nav"><button class="nav-back" onclick="go(9)">← BACK</button><button class="nav-next" id="n10" disabled onclick="go(11)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s11">
+  <div class="screen-inner">
+    <div class="q-num">11 of 14</div>
+    <h2 class="q-title">What do you already<br/><em>own and love?</em></h2>
+    <p class="q-sub">We won't recommend replacements for things you're happy with.</p>
+    <div class="options g2" id="o11">
+      <div class="opt" onclick="tm('q11','denim',this)"><div class="chk"></div><div class="ob"><div class="ol">Great denim</div></div></div>
+      <div class="opt" onclick="tm('q11','blazer',this)"><div class="chk"></div><div class="ob"><div class="ol">A blazer I love</div></div></div>
+      <div class="opt" onclick="tm('q11','coat',this)"><div class="chk"></div><div class="ob"><div class="ol">A good coat</div></div></div>
+      <div class="opt" onclick="tm('q11','knitwear',this)"><div class="chk"></div><div class="ob"><div class="ol">Solid knitwear</div></div></div>
+      <div class="opt" onclick="tm('q11','trousers',this)"><div class="chk"></div><div class="ob"><div class="ol">Tailored trousers</div></div></div>
+      <div class="opt" onclick="tm('q11','boots',this)"><div class="chk"></div><div class="ob"><div class="ol">Boots I love</div></div></div>
+      <div class="opt" onclick="tm('q11','sneakers',this)"><div class="chk"></div><div class="ob"><div class="ol">White sneakers</div></div></div>
+      <div class="opt" onclick="tm('q11','bag',this)"><div class="chk"></div><div class="ob"><div class="ol">An everyday bag</div></div></div>
+      <div class="opt" onclick="tm('q11','scratch',this)"><div class="chk"></div><div class="ob"><div class="ol">Starting from scratch</div><div class="od">Need everything</div></div></div>
+    </div>
+    <div class="nav"><button class="nav-back" onclick="go(10)">← BACK</button><button class="nav-next" onclick="go(12)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s12">
+  <div class="screen-inner">
+    <div class="q-num">12 of 14</div>
+    <h2 class="q-title">Anything you<br/><em>always avoid?</em></h2>
+    <p class="q-sub">Colours, fabrics, silhouettes &mdash; anything that's a hard no.</p>
+    <div class="options g2" id="o12">
+      <div class="opt" onclick="tm('q12','orange',this)"><div class="chk"></div><div class="ob"><div class="ol">Orange</div></div></div>
+      <div class="opt" onclick="tm('q12','yellow',this)"><div class="chk"></div><div class="ob"><div class="ol">Yellow</div></div></div>
+      <div class="opt" onclick="tm('q12','prints',this)"><div class="chk"></div><div class="ob"><div class="ol">Bold prints</div></div></div>
+      <div class="opt" onclick="tm('q12','synthetic',this)"><div class="chk"></div><div class="ob"><div class="ol">Synthetic fabrics</div></div></div>
+      <div class="opt" onclick="tm('q12','crop',this)"><div class="chk"></div><div class="ob"><div class="ol">Cropped tops</div></div></div>
+      <div class="opt" onclick="tm('q12','mini',this)"><div class="chk"></div><div class="ob"><div class="ol">Mini lengths</div></div></div>
+      <div class="opt" onclick="tm('q12','logos',this)"><div class="chk"></div><div class="ob"><div class="ol">Visible logos</div></div></div>
+      <div class="opt" onclick="tm('q12','none',this)"><div class="chk"></div><div class="ob"><div class="ol">No strong avoids</div></div></div>
+    </div>
+    <div class="nav"><button class="nav-back" onclick="go(11)">← BACK</button><button class="nav-next" onclick="go(13)">CONTINUE &rarr;</button></div>
+  </div>
+</div>
+
+<div class="screen" id="s13">
+  <div class="screen-inner">
+    <div class="q-num">13 of 14</div>
+    <div class="fit-tag">Fit Preference</div>
+    <h2 class="q-title">Anything specific<br/><em>about fit?</em></h2>
+    <p class="q-sub">Long torso, broad shoulders, short legs &mdash; anything the previous questions didn't capture.</p>
+    <div class="fit-note">"This is often the most useful thing we receive. The more specific you are, the more precisely we can tailor your recommendations."</div>
+    <textarea class="text-input" id="q13f" rows="5" placeholder="e.g. Long torso so tucked-in styles never look right on me. Broad shoulders so I need oversized blazers not fitted ones. Short legs so cropped pieces make me look shorter..." style="resize:none;line-height:1.6"></textarea>
+    <div class="nav">
+      <button class="nav-back" onclick="go(12)">← BACK</button>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button class="nav-skip" onclick="go(14)">SKIP &rarr;</button>
+        <button class="nav-next" onclick="go(14)">CONTINUE &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="s14">
+  <div class="screen-inner">
+    <div class="q-num">14 of 14</div>
+    <h2 class="q-title">Anything else<br/><em>we should know?</em></h2>
+    <p class="q-sub">Life context, a big change coming up, a specific occasion &mdash; anything that should shape your capsule.</p>
+    <textarea class="text-input" id="q14n" rows="5" placeholder="e.g. Starting a new office job in March. Moving from NYC to LA &mdash; need to rethink my wardrobe for a warmer climate. Just had a baby and rebuilding from scratch..." style="resize:none;line-height:1.6"></textarea>
+    <div class="nav">
+      <button class="nav-back" onclick="go(13)">← BACK</button>
+      <div style="display:flex;gap:12px;align-items:center">
+        <button class="nav-skip" onclick="go(15)">SKIP &rarr;</button>
+        <button class="nav-next" onclick="go(15)">REVIEW MY QUIZ &rarr;</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="screen" id="s15">
+  <div class="screen-inner sum-screen">
+    <div class="q-num">Almost there</div>
+    <h2 class="q-title">Review your<br/><em>quiz answers.</em></h2>
+    <p class="q-sub" style="margin-bottom:24px">Everything look right? You can go back to change anything before we start building.</p>
+
+    <!-- Edit hero &mdash; most important answer highlighted -->
+    <div class="sum-zone-hero" id="sumZoneHero">
+      <div>
+        <div class="szh-label">Your edit</div>
+        <div class="szh-zone" id="sumZoneName">Everyday</div>
+      </div>
+      <button class="szh-change" onclick="go(9)">Change edit &rarr;</button>
+    </div>
+
+    <!-- Summary sections -->
+    <div class="sum-sections" id="sumSections"></div>
+
+    <p class="sum-edit-note">Anything off? Use the back button or tap any section to edit.</p>
+    <button class="sum-submit" id="submitBtn" onclick="handleSubmit()">This looks right &mdash; build my capsule &rarr;</button>
+    <div class="nav" style="margin-top:16px">
+      <button class="nav-back" onclick="go(14)">← BACK</button>
+    </div>
+  </div>
+</div>
+
+<div class="screen" id="s16">
+  <div class="screen-inner complete-screen">
+    <div class="complete-icon">✦</div>
+    <h2 class="complete-title">Your capsule is<br/><em>being built.</em></h2>
+    <p class="complete-sub">We have everything we need. Your personal capsule page will be ready within 48 hours &mdash; password protected, built from your brands, tailored to exactly how you wear clothes. We'll email you the link.</p>
+    <div class="complete-summary" id="csum"></div>
+  </div>
+</div>
+
+<script>
+var BRANDS=[
+  {n:'Uniqlo',t:'Accessible'},
+  {n:'Quince',t:'Accessible'},
+  {n:'Gap',t:'Accessible'},
+  {n:'Zara',t:'Accessible'},
+  {n:'Mango',t:'Accessible'},
+  {n:'Everlane',t:'Mid-range'},
+  {n:'Madewell',t:'Mid-range'},
+  {n:'COS',t:'Mid-range'},
+  {n:'Banana Republic',t:'Mid-range'},
+  {n:'J.Crew',t:'Mid-range'},
+  {n:'Aritzia',t:'Mid-range'},
+  {n:'Anthropologie',t:'Mid-range'},
+  {n:'Abercrombie',t:'Mid-range'},
+  {n:'Reformation',t:'Mid-range'},
+  {n:'Sezane',t:'Mid-range'},
+  {n:'LOFT',t:'Mid-range'},
+  {n:'Universal Standard',t:'Mid-range'},
+  {n:'Cuyana',t:'Premium'},
+  {n:'J.Crew Factory',t:'Accessible'},
+  {n:'Gap Factory',t:'Accessible'},
+  {n:'BR Factory',t:'Accessible'}
+];
+
+var WORDS=['Understated','Effortless','Timeless','Minimal','Polished','Relaxed','Editorial','Classic','Modern','Intentional','Clean','Elevated','Unfussy','Considered','Sharp','Soft','Structured','Fluid','Bold','Quiet'];
+
+var A={};
+
+function go(n){
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var t=document.getElementById('s'+n);
+  if(t){t.classList.add('active');window.scrollTo(0,0);}
+  var pct=n>=15?100:Math.round(n/14*100);
+  document.getElementById('pf').style.width=pct+'%';
+  if(n>0&&n<15){
+    document.getElementById('pl').textContent=n+' / 14';
+  } else if(n===15){
+    document.getElementById('pl').textContent='Review';
+  } else {
+    document.getElementById('pl').textContent='';
+  }
+  if(n===15){buildReview();}
+  if(n===16){buildSum();}
+}
+
+function ss(q,v,el){
+  A[q]=v;
+  el.closest('.options').querySelectorAll('.opt').forEach(function(o){
+    o.classList.remove('selected');
+    o.querySelector('.chk').textContent='';
+  });
+  el.classList.add('selected');
+  el.querySelector('.chk').textContent='v';
+  var nb=document.getElementById('n'+q.replace('q',''));
+  if(nb){nb.disabled=false;}
+  if(q==='q9'){
+    var h=document.getElementById('h9');
+    if(h){h.style.display='block';}
+  }
+}
+
+function tm(q,v,el){
+  if(!A[q]){A[q]=[];}
+  var i=A[q].indexOf(v);
+  if(i>-1){
+    A[q].splice(i,1);
+    el.classList.remove('selected');
+    el.querySelector('.chk').textContent='';
+  } else {
+    A[q].push(v);
+    el.classList.add('selected');
+    el.querySelector('.chk').textContent='v';
+  }
+}
+
+function toggleBrand(n){
+  if(!A.brands){A.brands=[];}
+  var id='br-'+n.replace(/[\s&]+/g,'-');
+  var el=document.getElementById(id);
+  var i=A.brands.indexOf(n);
+  if(i>-1){
+    A.brands.splice(i,1);
+    el.classList.remove('selected');
+  } else {
+    if(A.brands.length>=5){
+      document.getElementById('h3').textContent='5 brands max -- remove one to swap.';
+      return;
+    }
+    A.brands.push(n);
+    el.classList.add('selected');
+    document.getElementById('h3').textContent='';
+  }
+  var c=A.brands.length;
+  if(c===0){
+    document.getElementById('blim').textContent='Select up to 5 brands';
+  } else if(c===5){
+    document.getElementById('blim').textContent='5 brands selected -- maximum reached';
+  } else {
+    document.getElementById('blim').textContent=c+' brand'+(c>1?'s':'')+' selected - '+(5-c)+' more available';
+  }
+  document.getElementById('n3').disabled=(c===0);
+}
+
+function toggleWord(w){
+  if(!A.words){A.words=[];}
+  var el=document.getElementById('wd-'+w);
+  var i=A.words.indexOf(w);
+  if(i>-1){
+    A.words.splice(i,1);
+    el.classList.remove('selected');
+  } else {
+    if(A.words.length>=3){
+      document.getElementById('h8').textContent='Pick exactly 3 -- remove one to swap.';
+      return;
+    }
+    A.words.push(w);
+    el.classList.add('selected');
+  }
+  var c=A.words.length;
+  document.getElementById('h8').textContent=c===3?'3 words selected':''+c+' of 3 selected';
+  document.getElementById('n8').disabled=(c!==3);
+}
+
+function chk1(){
+  var n=document.getElementById('q1n').value.trim();
+  var e=document.getElementById('q1e').value.trim();
+  var v=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);
+  document.getElementById('n1').disabled=!(n&&v);
+  document.getElementById('h1').textContent=(e&&!v)?"That doesn't look like a valid email.":'';
+  if(n){A.name=n;}
+  if(v){A.email=e;}
+}
+
+function buildReview(){
+  var ZONE_NAMES={everyday:'The Daily Edit -- Everyday',work:'The Office Edit -- Work',weekend:'The Going-Out Edit -- Weekend & Social'};
+  var ZONE_COLORS={everyday:'#8B6B42',work:'#4A7C59',weekend:'#5A5048'};
+  var SIL={relaxed:'Relaxed and easy',mixed:'Considered mix',tailored:'Tailored and defined',contextual:'Occasion-dependent'};
+  var PROP={petite:'Petite (under 5ft 4in)',tall:'Tall (5ft 9in+)',curvy:'Significant hip-to-waist difference',standard:'Standard proportions',multiple:'Multiple -- see fit notes'};
+  var SZ={xss:'XS-S (0-6)',sm:'S-M (4-10)',ml:'M-L (8-14)',lxl:'L-XL (12-18)','1x3x':'1X-3X (18-26)','3xp':'3X+'};
+  var STY={classic:'Classic Minimalist',parisian:'Parisian Chic',workwear:'Modern Workwear',quiet:'Quiet Luxury',coastal:'Coastal Casual',creative:'Creative Professional',feminine:'Soft Feminine',weekend:'Weekend Casual'};
+  var PROB={full:'Full wardrobe, nothing to wear',rotation:'Same 5 things on rotation',orphans:"Pieces that don't go with anything",time:'Getting dressed takes too long'};
+  var BUD={u75:'Under $75 per piece','75150':'$75-$150 per piece','150300':'$150-$300 per piece','300p':'$300+ per piece'};
+
+  var zone=A.q9||'everyday';
+  var zoneHero=document.getElementById('sumZoneHero');
+  var zoneName=document.getElementById('sumZoneName');
+  if(zoneName){zoneName.textContent=ZONE_NAMES[zone]||zone;}
+  if(zoneHero){zoneHero.style.background=ZONE_COLORS[zone]||'#8B6B42';}
+
+  var fitNotes='';
+  var q13el=document.getElementById('q13f');
+  if(q13el){fitNotes=q13el.value||'';}
+  var otherNotes='';
+  var q14el=document.getElementById('q14n');
+  if(q14el){otherNotes=q14el.value||'';}
+
+  var brandChips='';
+  if(A.brands&&A.brands.length){
+    for(var i=0;i<A.brands.length;i++){
+      brandChips+='<span class="sum-brand-chip">'+A.brands[i]+'</span>';
+    }
+  } else {
+    brandChips='<span style="color:var(--muted)">None selected</span>';
+  }
+
+  function row(k,v){
+    return '<div class="sum-row"><span class="sum-key">'+k+'</span><span class="sum-val">'+(v||'-')+'</span></div>';
+  }
+  function section(label,rowsHtml){
+    return '<div class="sum-section"><div class="sum-sec-head">'+label+'</div><div class="sum-rows">'+rowsHtml+'</div></div>';
+  }
+
+  var out='';
+  out+=section('About you',
+    row('Name',A.name||'-')+
+    row('Email',A.email||'-')+
+    row('Budget',BUD[A.q2]||'-')
+  );
+  out+='<div class="sum-section"><div class="sum-sec-head">Your brands</div><div class="sum-rows" style="padding:12px 16px"><div class="sum-val brands-val">'+brandChips+'</div></div></div>';
+  var fitRows=row('Silhouette',SIL[A.q4]||'-')+row('Proportions',PROP[A.q5]||'-')+row('Size range',SZ[A.q6]||'-');
+  if(fitNotes){fitRows+=row('Fit notes',fitNotes);}
+  out+=section('Fit profile',fitRows);
+  var wordStr=(A.words&&A.words.join(', '))||'-';
+  out+=section('Style',
+    row('Capsule style',STY[A.q7]||'-')+
+    row('Style words',wordStr)+
+    row('Biggest problem',PROB[A.q10]||'-')
+  );
+  var ctxRows=row('Already owns',(A.q11&&A.q11.join(', '))||'-')+row('Avoids',(A.q12&&A.q12.join(', '))||'-');
+  if(otherNotes){ctxRows+=row('Other notes',otherNotes);}
+  out+=section('Wardrobe context',ctxRows);
+
+  var container=document.getElementById('sumSections');
+  if(container){container.innerHTML=out;}
+}
+
+function handleSubmit(){
+  var btn = document.getElementById('submitBtn');
+  if(btn){ btn.disabled=true; btn.textContent='Sending...'; }
+
+  // Collect all fit notes and other notes
+  var fitNotes = '';
+  var q13el = document.getElementById('q13f');
+  if(q13el){ fitNotes = q13el.value || ''; }
+  var otherNotes = '';
+  var q14el = document.getElementById('q14n');
+  if(q14el){ otherNotes = q14el.value || ''; }
+
+  var ZONE_NAMES = {everyday:'The Daily Edit - Everyday',work:'The Office Edit - Work',weekend:'The Going-Out Edit - Weekend & Social'};
+  var SIL = {relaxed:'Relaxed and easy',mixed:'Considered mix',tailored:'Tailored and defined',contextual:'Occasion-dependent'};
+  var PROP = {petite:'Petite (under 5ft 4in)',tall:'Tall (5ft 9in+)',curvy:'Significant hip-to-waist difference',standard:'Standard proportions',multiple:'Multiple - see fit notes'};
+  var SZ = {xss:'XS-S (0-6)',sm:'S-M (4-10)',ml:'M-L (8-14)',lxl:'L-XL (12-18)','1x3x':'1X-3X (18-26)','3xp':'3X+'};
+  var STY = {classic:'Classic Minimalist',parisian:'Parisian Chic',workwear:'Modern Workwear',quiet:'Quiet Luxury',coastal:'Coastal Casual',creative:'Creative Professional',feminine:'Soft Feminine',weekend:'Weekend Casual'};
+  var PROB = {full:'Full wardrobe, nothing to wear',rotation:'Same 5 things on rotation',orphans:"Pieces that don't go with anything",time:'Getting dressed takes too long'};
+  var BUD = {u75:'Under $75 per piece','75150':'$75-$150 per piece','150300':'$150-$300 per piece','300p':'$300+ per piece'};
+  var OWN = {denim:'Great denim',knit:'A knit I love',blazer:'A blazer that works',bag:'My bag situation is sorted',shoes:'Shoes covered',coat:'Outerwear sorted',none:'Starting fresh'};
+  var AVO = {prints:'Prints and patterns',synthetic:'Synthetic fabrics',crop:'Cropped styles',heels:'Heels',colour:'Colour - neutrals only',logos:'Logos and branding'};
+
+  var data = {
+    // Identity
+    _subject: 'New Capsule Club Quiz - ' + (A.name || 'Member') + ' - ' + (ZONE_NAMES[A.q9] || 'Unknown zone'),
+    member_name: A.name || '-',
+    member_email: A.email || '-',
+
+    // Capsule zone
+    capsule_occasion: ZONE_NAMES[A.q9] || '-',
+    budget_per_piece: BUD[A.q2] || '-',
+
+    // Brands
+    selected_brands: (A.brands && A.brands.join(', ')) || '-',
+
+    // Fit profile
+    silhouette_preference: SIL[A.q4] || '-',
+    body_proportions: PROP[A.q5] || '-',
+    size_range: SZ[A.q6] || '-',
+    fit_notes: fitNotes || 'None',
+
+    // Style
+    capsule_style: STY[A.q7] || '-',
+    style_words: (A.words && A.words.join(', ')) || '-',
+    biggest_wardrobe_problem: PROB[A.q10] || '-',
+
+    // Wardrobe context
+    already_owns: (A.q11 && A.q11.map(function(v){ return OWN[v]||v; }).join(', ')) || '-',
+    avoids: (A.q12 && A.q12.map(function(v){ return AVO[v]||v; }).join(', ')) || '-',
+    other_notes: otherNotes || 'None',
+
+    // Curation prompt ready summary
+    curation_summary:
+      'MEMBER: ' + (A.name||'-') + ' | ' + (A.email||'-') + '\n' +
+      'OCCASION: ' + (ZONE_NAMES[A.q9]||'-') + '\n' +
+      'BUDGET: ' + (BUD[A.q2]||'-') + '\n' +
+      'BRANDS: ' + ((A.brands&&A.brands.join(', '))||'-') + '\n' +
+      'SILHOUETTE: ' + (SIL[A.q4]||'-') + '\n' +
+      'PROPORTIONS: ' + (PROP[A.q5]||'-') + '\n' +
+      'SIZE: ' + (SZ[A.q6]||'-') + '\n' +
+      'FIT NOTES: ' + (fitNotes||'None') + '\n' +
+      'CAPSULE STYLE: ' + (STY[A.q7]||'-') + '\n' +
+      'STYLE WORDS: ' + ((A.words&&A.words.join(', '))||'-') + '\n' +
+      'PROBLEM: ' + (PROB[A.q10]||'-') + '\n' +
+      'ALREADY OWNS: ' + ((A.q11&&A.q11.map(function(v){return OWN[v]||v;}).join(', '))||'-') + '\n' +
+      'AVOIDS: ' + ((A.q12&&A.q12.map(function(v){return AVO[v]||v;}).join(', '))||'-') + '\n' +
+      'OTHER: ' + (otherNotes||'None')
+  };
+
+  fetch('https://formspree.io/f/xojydbvw', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data)
+  })
+  .then(function(res){
+    if(res.ok){
+      go(16);
+    } else {
+      if(btn){ btn.disabled=false; btn.textContent='Try again'; }
+      alert('Something went wrong. Please email hello@joincapsuleclub.com directly.');
+    }
+  })
+  .catch(function(){
+    if(btn){ btn.disabled=false; btn.textContent='Try again'; }
+    alert('Something went wrong. Please email hello@joincapsuleclub.com directly.');
+  });
+}
+
+function buildSum(){
+  var SIL={relaxed:'Relaxed and easy',mixed:'Considered mix',tailored:'Tailored and defined',contextual:'Occasion-dependent'};
+  var PROP={petite:'Petite (under 5ft 4in)',tall:'Tall (5ft 9in+)',curvy:'Significant size difference',standard:'Standard',multiple:'Multiple -- see notes'};
+  var SZ={xss:'XS-S (0-6)',sm:'S-M (4-10)',ml:'M-L (8-14)',lxl:'L-XL (12-18)','1x3x':'1X-3X (18-26)','3xp':'3X+'};
+  var STY={classic:'Classic Minimalist',parisian:'Parisian Chic',workwear:'Modern Workwear',quiet:'Quiet Luxury',coastal:'Coastal Casual',creative:'Creative Professional',feminine:'Soft Feminine',weekend:'Weekend Casual'};
+  var OCC={everyday:'Everyday',work:'Work',weekend:'Weekend & Social'};
+  var PROB={full:'Full wardrobe, nothing to wear',rotation:'Same 5 things on rotation',orphans:"Pieces that don't go with anything",time:'Getting dressed takes too long'};
+  var BUD={u75:'Under $75','75150':'$75-$150','150300':'$150-$300','300p':'$300+'};
+
+  var secs=[
+    {l:'About You',r:[{k:'Name',v:A.name||'-'},{k:'Email',v:A.email||'-'},{k:'Budget',v:BUD[A.q2]||'-'},{k:'Brands',v:(A.brands&&A.brands.join(', '))||'-'}]},
+    {l:'Fit Profile',r:[{k:'Silhouette',v:SIL[A.q4]||'-'},{k:'Proportions',v:PROP[A.q5]||'-'},{k:'Size range',v:SZ[A.q6]||'-'}]},
+    {l:'Style',r:[{k:'Capsule style',v:STY[A.q7]||'-'},{k:'Style words',v:(A.words&&A.words.join(', '))||'-'},{k:'Occasion',v:OCC[A.q9]||'-'},{k:'Biggest problem',v:PROB[A.q10]||'-'}]},
+    {l:'Wardrobe Context',r:[{k:'Already owns',v:(A.q11&&A.q11.join(', '))||'-'},{k:'Avoids',v:(A.q12&&A.q12.join(', '))||'-'}]}
+  ];
+
+  var html='';
+  for(var i=0;i<secs.length;i++){
+    html+='<div class="cs-sec">'+secs[i].l+'</div>';
+    for(var j=0;j<secs[i].r.length;j++){
+      html+='<div class="cs-row"><span class="cs-k">'+secs[i].r[j].k+'</span><span class="cs-v">'+secs[i].r[j].v+'</span></div>';
+    }
+  }
+  var el=document.getElementById('csum');
+  if(el){el.innerHTML=html;}
+}
+
+// Init brands
+(function(){
+  var g=document.getElementById('brg');
+  if(!g){return;}
+  for(var i=0;i<BRANDS.length;i++){
+    var b=BRANDS[i];
+    var el=document.createElement('div');
+    el.className='br';
+    el.id='br-'+b.n.replace(/[\s&.]+/g,'-');
+    el.innerHTML='<div class="br-name">'+b.n+'</div><div class="br-tier">'+b.t+'</div>';
+    (function(name){el.onclick=function(){toggleBrand(name);};})(b.n);
+    g.appendChild(el);
+  }
+})();
+
+// Init style words
+(function(){
+  var g=document.getElementById('wg8');
+  if(!g){return;}
+  for(var i=0;i<WORDS.length;i++){
+    var w=WORDS[i];
+    var el=document.createElement('div');
+    el.className='wc';
+    el.id='wd-'+w;
+    el.textContent=w;
+    (function(word){el.onclick=function(){toggleWord(word);};})(w);
+    g.appendChild(el);
+  }
+})();
+
+go(0);
+</script>
+</body>
+</html>
