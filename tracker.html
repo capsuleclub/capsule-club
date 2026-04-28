@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lynparza Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3347;
+    --accent: #7eb8f7;
+    --accent2: #a78bfa;
+    --green: #4ade80;
+    --green-dim: #166534;
+    --amber: #fbbf24;
+    --red: #f87171;
+    --text: #e8edf5;
+    --text-muted: #7b8aa0;
+    --text-dim: #4a566a;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 40px;
+  }
+
+  /* Ambient glow */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 600px;
+    height: 400px;
+    background: radial-gradient(ellipse, rgba(126,184,247,0.07) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 420px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  .header .pill-icon {
+    font-size: 36px;
+    margin-bottom: 12px;
+    display: block;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  .header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .header p {
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  /* Date strip */
+  .date-strip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+
+  .date-strip .date {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .date-strip .clock {
+    font-family: 'DM Serif Display', serif;
+    font-size: 18px;
+    color: var(--accent);
+    letter-spacing: 1px;
+  }
+
+  /* Dose cards */
+  .dose-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 16px;
+    transition: border-color 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dose-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+
+  .dose-card.taken { border-color: var(--green-dim); }
+  .dose-card.taken::before { opacity: 1; background: linear-gradient(90deg, var(--green), #86efac); }
+  .dose-card.overdue { border-color: #7f1d1d; }
+  .dose-card.overdue::before { opacity: 1; background: linear-gradient(90deg, var(--red), #fca5a5); }
+
+  .dose-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 18px;
+  }
+
+  .dose-label {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--text);
+  }
+
+  .dose-time {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .status-badge.pending { background: rgba(126,184,247,0.1); color: var(--accent); }
+  .status-badge.taken { background: rgba(74,222,128,0.1); color: var(--green); }
+  .status-badge.overdue { background: rgba(248,113,113,0.1); color: var(--red); }
+  .status-badge.future { background: rgba(123,138,160,0.1); color: var(--text-muted); }
+
+  .pill-count {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .pill-dot {
+    width: 28px;
+    height: 14px;
+    border-radius: 7px;
+    border: 1.5px solid var(--border);
+    background: var(--surface2);
+    transition: all 0.3s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .pill-dot.filled {
+    background: linear-gradient(135deg, var(--green), #86efac);
+    border-color: transparent;
+    box-shadow: 0 0 8px rgba(74,222,128,0.4);
+  }
+
+  .pill-dot.filled::after {
+    content: '';
+    position: absolute;
+    top: 2px; left: 4px;
+    width: 8px; height: 4px;
+    border-radius: 2px;
+    background: rgba(255,255,255,0.3);
+  }
+
+  .confirm-btn {
+    width: 100%;
+    padding: 16px;
+    border-radius: 14px;
+    border: none;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+    transition: all 0.25s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .confirm-btn.active {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    color: #0e1117;
+    box-shadow: 0 4px 20px rgba(126,184,247,0.25);
+  }
+
+  .confirm-btn.active:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 25px rgba(126,184,247,0.35);
+  }
+
+  .confirm-btn.active:active { transform: translateY(0); }
+
+  .confirm-btn.done {
+    background: rgba(74,222,128,0.1);
+    color: var(--green);
+    border: 1.5px solid rgba(74,222,128,0.2);
+    cursor: default;
+  }
+
+  .confirm-btn.disabled {
+    background: var(--surface2);
+    color: var(--text-dim);
+    cursor: not-allowed;
+  }
+
+  .taken-time {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 10px;
+  }
+
+  /* Reminder countdown */
+  .reminder-strip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 14px;
+    padding: 10px 14px;
+    background: rgba(251,191,36,0.07);
+    border: 1px solid rgba(251,191,36,0.15);
+    border-radius: 10px;
+    font-size: 12px;
+    color: var(--amber);
+  }
+
+  .reminder-strip .blink {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--amber);
+    animation: blink 1s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.2; }
+  }
+
+  /* Share section */
+  .share-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 22px 24px;
+    margin-top: 8px;
+  }
+
+  .share-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+  }
+
+  .status-summary {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+
+  .summary-item {
+    flex: 1;
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+  }
+
+  .summary-item .num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .summary-item .label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .copy-link-btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 12px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+
+  .copy-link-btn:hover {
+    background: var(--surface2);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .copy-link-btn.copied {
+    border-color: var(--green);
+    color: var(--green);
+    background: rgba(74,222,128,0.05);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 20px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Confetti canvas */
+  #confetti-canvas {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  /* Footer note */
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-dim);
+    margin-top: 28px;
+    line-height: 1.6;
+  }
+
+  /* Shake animation for overdue */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20% { transform: translateX(-4px); }
+    40% { transform: translateX(4px); }
+    60% { transform: translateX(-3px); }
+    80% { transform: translateX(3px); }
+  }
+  .shake { animation: shake 0.4s ease; }
+
+  /* Pulse for active */
+  @keyframes pulse-border {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(126,184,247,0.2); }
+    50% { box-shadow: 0 0 0 6px rgba(126,184,247,0); }
+  }
+  .dose-card.active-now { animation: pulse-border 2.5s ease infinite; }
+
+  /* View mode banner (shared view) */
+  .view-banner {
+    background: linear-gradient(135deg, rgba(167,139,250,0.12), rgba(126,184,247,0.08));
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 14px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: var(--text-muted);
+  }
+
+  .view-banner .avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .view-banner strong { color: var(--text); }
+</style>
+</head>
+<body>
+<canvas id="confetti-canvas"></canvas>
+
+<div class="container">
+  <div class="header">
+    <span class="pill-icon">💊</span>
+    <h1>Lynparza Tracker</h1>
+    <p>2 pills · twice daily · 9 AM &amp; 9 PM</p>
+  </div>
+
+  <div id="view-banner" class="view-banner" style="display:none">
+    <div class="avatar">👤</div>
+    <div><strong>Viewing mode</strong><br>You're seeing Stephanie's medication status</div>
+  </div>
+
+  <div class="date-strip">
+    <span class="date" id="date-display"></span>
+    <span class="clock" id="clock-display"></span>
+  </div>
+
+  <!-- Morning dose -->
+  <div class="dose-card" id="card-am">
+    <div class="dose-header">
+      <div>
+        <div class="dose-label">Morning Dose</div>
+        <div class="dose-time">9:00 AM · 2 pills</div>
+      </div>
+      <div class="status-badge" id="badge-am">Pending</div>
+    </div>
+    <div class="pill-count" id="pills-am">
+      <div class="pill-dot"></div>
+      <div class="pill-dot"></div>
+    </div>
+    <button class="confirm-btn" id="btn-am" onclick="confirmDose('am')">
+      ✓ Confirm Morning Dose Taken
+    </button>
+    <div class="taken-time" id="taken-am" style="display:none"></div>
+    <div class="reminder-strip" id="reminder-am" style="display:none">
+      <div class="blink"></div>
+      <span id="reminder-am-text">Next reminder in 15:00</span>
+    </div>
+  </div>
+
+  <!-- Evening dose -->
+  <div class="dose-card" id="card-pm">
+    <div class="dose-header">
+      <div>
+        <div class="dose-label">Evening Dose</div>
+        <div class="dose-time">9:00 PM · 2 pills</div>
+      </div>
+      <div class="status-badge" id="badge-pm">Pending</div>
+    </div>
+    <div class="pill-count" id="pills-pm">
+      <div class="pill-dot"></div>
+      <div class="pill-dot"></div>
+    </div>
+    <button class="confirm-btn" id="btn-pm" onclick="confirmDose('pm')">
+      ✓ Confirm Evening Dose Taken
+    </button>
+    <div class="taken-time" id="taken-pm" style="display:none"></div>
+    <div class="reminder-strip" id="reminder-pm" style="display:none">
+      <div class="blink"></div>
+      <span id="reminder-pm-text">Next reminder in 15:00</span>
+    </div>
+  </div>
+
+  <!-- Share card -->
+  <div class="share-card">
+    <div class="share-title">📤 Share with Husband</div>
+    <div class="status-summary">
+      <div class="summary-item">
+        <div class="num" id="pills-taken-count">0</div>
+        <div class="label">Pills taken today</div>
+      </div>
+      <div class="summary-item">
+        <div class="num" id="doses-done-count">0/2</div>
+        <div class="label">Doses complete</div>
+      </div>
+    </div>
+    <button class="copy-link-btn" id="share-btn" onclick="shareStatus()">
+      🔗 Copy shareable link
+    </button>
+  </div>
+
+  <div class="footer-note">
+    Reminders fire every 15 minutes after missed dose time.<br>
+    Keep this tab open for notifications to work.
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ─── State ────────────────────────────────────────────────
+  const STORAGE_KEY = 'lynparza_state';
+  const REMINDER_INTERVAL = 15 * 60 * 1000; // 15 min
+  const DOSES = {
+    am: { hour: 9, min: 0, label: 'Morning' },
+    pm: { hour: 21, min: 0, label: 'Evening' }
+  };
+
+  let state = loadState();
+  let reminderTimers = { am: null, pm: null };
+  let countdownIntervals = { am: null, pm: null };
+
+  function todayKey() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return {};
+      const s = JSON.parse(raw);
+      // Reset if it's a new day
+      if (s.date !== todayKey()) return {};
+      return s;
+    } catch { return {}; }
+  }
+
+  function saveState() {
+    state.date = todayKey();
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  }
+
+  // ─── View mode (shared link) ──────────────────────────────
+  const isViewMode = new URLSearchParams(location.search).get('view') === '1';
+  if (isViewMode) {
+    document.getElementById('view-banner').style.display = 'flex';
+  }
+
+  // ─── Clock ────────────────────────────────────────────────
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock-display').textContent =
+      now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    document.getElementById('date-display').textContent =
+      now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // ─── Confirm dose ─────────────────────────────────────────
+  function confirmDose(key) {
+    if (isViewMode) return;
+    if (state[key + '_taken']) return;
+
+    const now = new Date();
+    state[key + '_taken'] = now.toISOString();
+    saveState();
+
+    // Clear any pending reminders
+    clearReminder(key);
+
+    renderDose(key);
+    updateSummary();
+    confetti();
+    showToast(`✅ ${DOSES[key].label} dose confirmed!`);
+  }
+
+  function renderDose(key) {
+    const takenISO = state[key + '_taken'];
+    const card = document.getElementById('card-' + key);
+    const btn = document.getElementById('btn-' + key);
+    const badge = document.getElementById('badge-' + key);
+    const pillsEl = document.getElementById('pills-' + key);
+    const takenEl = document.getElementById('taken-' + key);
+    const reminderEl = document.getElementById('reminder-' + key);
+
+    const now = new Date();
+    const dose = DOSES[key];
+    const doseTime = new Date(now);
+    doseTime.setHours(dose.hour, dose.min, 0, 0);
+
+    const isPast = now >= doseTime;
+    const isOverdue = isPast && !takenISO;
+    const isTaken = !!takenISO;
+    const isFuture = !isPast && !takenISO;
+
+    // Pills
+    const dots = pillsEl.querySelectorAll('.pill-dot');
+    dots.forEach(d => d.classList.toggle('filled', isTaken));
+
+    // Card classes
+    card.classList.remove('taken', 'overdue', 'active-now');
+    if (isTaken) card.classList.add('taken');
+    else if (isOverdue) card.classList.add('overdue');
+    else if (isPast) card.classList.add('active-now');
+
+    // Badge
+    badge.classList.remove('pending', 'taken', 'overdue', 'future');
+    if (isTaken) { badge.textContent = '✓ Taken'; badge.classList.add('taken'); }
+    else if (isOverdue) { badge.textContent = '⚠ Overdue'; badge.classList.add('overdue'); }
+    else if (isFuture) { badge.textContent = 'Upcoming'; badge.classList.add('future'); }
+    else { badge.textContent = 'Now'; badge.classList.add('pending'); }
+
+    // Button
+    btn.className = 'confirm-btn';
+    if (isTaken) {
+      btn.className += ' done';
+      btn.textContent = '✓ Dose Confirmed';
+      btn.disabled = true;
+    } else if (isFuture) {
+      btn.className += ' disabled';
+      btn.textContent = `Confirm ${dose.label} Dose Taken`;
+      btn.disabled = isViewMode;
+    } else {
+      btn.className += ' active';
+      btn.textContent = `✓ Confirm ${dose.label} Dose Taken`;
+      btn.disabled = isViewMode;
+    }
+
+    // Taken time
+    if (isTaken) {
+      const t = new Date(takenISO);
+      takenEl.style.display = 'block';
+      takenEl.textContent = `Taken at ${t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}`;
+    } else {
+      takenEl.style.display = 'none';
+    }
+
+    // Reminder strip
+    if (isOverdue && !isViewMode) {
+      reminderEl.style.display = 'flex';
+      scheduleReminders(key, doseTime);
+    } else {
+      reminderEl.style.display = 'none';
+    }
+
+    // If it's upcoming, schedule a check at dose time
+    if (isFuture && !isViewMode) {
+      const msUntilDose = doseTime - now;
+      setTimeout(() => renderDose(key), msUntilDose + 1000);
+    }
+  }
+
+  // ─── Reminders ────────────────────────────────────────────
+  function scheduleReminders(key, doseTime) {
+    if (reminderTimers[key]) return; // already scheduled
+
+    const countdownEl = document.getElementById('reminder-' + key + '-text');
+
+    // Calculate next reminder from dose time
+    const now = Date.now();
+    const elapsed = now - doseTime.getTime();
+    const cycle = REMINDER_INTERVAL;
+    const nextIn = cycle - (elapsed % cycle);
+
+    let nextReminderAt = Date.now() + nextIn;
+
+    // Countdown ticker
+    clearInterval(countdownIntervals[key]);
+    countdownIntervals[key] = setInterval(() => {
+      const remaining = nextReminderAt - Date.now();
+      if (remaining <= 0) {
+        nextReminderAt = Date.now() + REMINDER_INTERVAL;
+      }
+      const m = String(Math.floor(Math.max(0, remaining) / 60000)).padStart(2, '0');
+      const s = String(Math.floor((Math.max(0, remaining) % 60000) / 1000)).padStart(2, '0');
+      if (countdownEl) countdownEl.textContent = `Next reminder in ${m}:${s}`;
+    }, 1000);
+
+    // First reminder
+    reminderTimers[key] = setTimeout(function fire() {
+      if (state[key + '_taken']) return;
+      triggerReminder(key);
+      nextReminderAt = Date.now() + REMINDER_INTERVAL;
+      reminderTimers[key] = setTimeout(fire, REMINDER_INTERVAL);
+    }, nextIn);
+  }
+
+  function clearReminder(key) {
+    clearTimeout(reminderTimers[key]);
+    clearInterval(countdownIntervals[key]);
+    reminderTimers[key] = null;
+    countdownIntervals[key] = null;
+    const reminderEl = document.getElementById('reminder-' + key);
+    if (reminderEl) reminderEl.style.display = 'none';
+  }
+
+  function triggerReminder(key) {
+    const label = DOSES[key].label;
+
+    // Shake the card
+    const card = document.getElementById('card-' + key);
+    card.classList.remove('shake');
+    void card.offsetWidth;
+    card.classList.add('shake');
+
+    showToast(`⏰ Reminder: Take your ${label} Lynparza dose!`);
+
+    // Browser notification
+    if (Notification.permission === 'granted') {
+      new Notification('💊 Lynparza Reminder', {
+        body: `Don't forget your ${label} dose — 2 pills`,
+        icon: 'https://em-content.zobj.net/source/apple/354/pill_1f48a.png',
+        tag: 'lynparza-' + key
+      });
+    }
+  }
+
+  // ─── Notifications permission ─────────────────────────────
+  function requestNotifPermission() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission();
+    }
+  }
+
+  // ─── Summary ──────────────────────────────────────────────
+  function updateSummary() {
+    const amDone = !!state.am_taken;
+    const pmDone = !!state.pm_taken;
+    const pillCount = (amDone ? 2 : 0) + (pmDone ? 2 : 0);
+    const doseCount = (amDone ? 1 : 0) + (pmDone ? 1 : 0);
+    document.getElementById('pills-taken-count').textContent = pillCount;
+    document.getElementById('doses-done-count').textContent = doseCount + '/2';
+  }
+
+  // ─── Share ────────────────────────────────────────────────
+  function shareStatus() {
+    const url = location.origin + location.pathname + '?view=1';
+    navigator.clipboard.writeText(url).then(() => {
+      const btn = document.getElementById('share-btn');
+      btn.textContent = '✓ Link copied!';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = '🔗 Copy shareable link';
+        btn.classList.remove('copied');
+      }, 2500);
+    }).catch(() => {
+      showToast('Copy this URL: ' + location.href + '?view=1');
+    });
+  }
+
+  // ─── Toast ────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 3500);
+  }
+
+  // ─── Confetti ─────────────────────────────────────────────
+  function confetti() {
+    const canvas = document.getElementById('confetti-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = Array.from({ length: 80 }, () => ({
+      x: Math.random() * canvas.width,
+      y: -10,
+      r: Math.random() * 6 + 3,
+      d: Math.random() * 2 + 1,
+      color: ['#7eb8f7','#a78bfa','#4ade80','#fbbf24','#f9a8d4'][Math.floor(Math.random()*5)],
+      tilt: Math.random() * 10 - 5,
+      tiltSpeed: Math.random() * 0.1 + 0.05
+    }));
+
+    let frame = 0;
+    const anim = setInterval(() => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      frame++;
+      let alive = false;
+      pieces.forEach(p => {
+        p.y += p.d + 1;
+        p.tilt += p.tiltSpeed;
+        p.x += Math.sin(p.tilt) * 1.5;
+        if (p.y < canvas.height) alive = true;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, 1 - p.y / canvas.height);
+        ctx.fill();
+      });
+      ctx.globalAlpha = 1;
+      if (!alive || frame > 120) {
+        clearInterval(anim);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+    }, 16);
+  }
+
+  // ─── Init ─────────────────────────────────────────────────
+  renderDose('am');
+  renderDose('pm');
+  updateSummary();
+  requestNotifPermission();
+
+  // Refresh every minute to catch dose windows
+  setInterval(() => {
+    renderDose('am');
+    renderDose('pm');
+  }, 60000);
+</script>
+</body>
+</html>
